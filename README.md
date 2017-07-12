@@ -16,3 +16,9 @@
 * レート取得
 
     - http://localhost/price?cp=oanda&symbol=USD/JPY
+
+# 予定
+
+* 約定したらメールを送信
+
+*

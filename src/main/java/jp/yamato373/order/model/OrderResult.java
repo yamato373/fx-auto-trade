@@ -1,9 +1,10 @@
 package jp.yamato373.order.model;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
-import jp.yamato373.uitll.FxEnums.Side;
-import jp.yamato373.uitll.FxEnums.Status;
+import jp.yamato373.uitl.FxEnums.Side;
+import jp.yamato373.uitl.FxEnums.Status;
 import lombok.Data;
 
 @Data
@@ -37,12 +38,12 @@ public class OrderResult {
 	/**
 	 * 注文数量
 	 */
-	Double orderQty;
+	BigDecimal orderQty;
 
 	/**
 	 * 注文価格
 	 */
-	Double price;
+	BigDecimal price;
 
 	/**
 	 * CP側注文ID
@@ -62,20 +63,20 @@ public class OrderResult {
 	/**
 	 * 約定数量
 	 */
-	Double lastQty;
+	BigDecimal lastQty;
 
 	/**
 	 * 約定価格
 	 */
-	Double lastPx;
+	BigDecimal lastPx;
 
 	/**
 	 * リジェクト理由コード
 	 */
 	Integer rejReason;
 
-	public OrderResult(Status status, String clOrdId, String symbol, Side side, Date orderTime, Double orderQty,
-			Double price) {
+	public OrderResult(Status status, String clOrdId, String symbol, Side side, Date orderTime, BigDecimal orderQty,
+			BigDecimal price) {
 		this.status = status;
 		this.clOrdId = clOrdId;
 		this.symbol = symbol;

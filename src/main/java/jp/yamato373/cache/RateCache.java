@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 import jp.yamato373.price.model.Rate;
 import jp.yamato373.price.model.Rate.Entry;
-import jp.yamato373.uitll.FxEnums.Side;
+import jp.yamato373.uitl.FxEnums.Side;
 
 @Component
 public class RateCache {

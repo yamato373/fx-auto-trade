@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import jp.yamato373.cache.RateCache;
 import jp.yamato373.price.model.Rate;
 import jp.yamato373.price.model.Rate.Entry;
-import jp.yamato373.uitll.FxEnums.Side;
+import jp.yamato373.uitl.FxEnums.Side;
 
 @Repository
 public class RateDao {

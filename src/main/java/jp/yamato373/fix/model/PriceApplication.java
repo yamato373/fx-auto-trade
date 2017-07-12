@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import jp.yamato373.fix.util.FixSettings;
 import jp.yamato373.price.model.Rate;
 import jp.yamato373.price.model.Rate.Entry;
 import jp.yamato373.price.service.PriceService;
@@ -33,8 +34,8 @@ import quickfix.fix44.MessageCracker;
 @Slf4j
 public class PriceApplication extends MessageCracker implements Application {
 
-	private final String PASSWARD = "XXXXX";
-	private final String INDICATIVE_TEXT = "Indicative";
+	@Autowired
+	FixSettings fixSettings;
 
 	@Autowired
 	Subscription subscription;
@@ -62,7 +63,7 @@ public class PriceApplication extends MessageCracker implements Application {
 
 		try {
 			if (MsgType.LOGON.equals(message.getHeader().getString(MsgType.FIELD))) {
-				message.getHeader().setString(Password.FIELD, PASSWARD);
+				message.getHeader().setString(Password.FIELD, fixSettings.getPassword());
 			}
 		} catch (FieldNotFound e) {
 			log.error("toAdminの処理で失敗！", e);
@@ -106,10 +107,10 @@ public class PriceApplication extends MessageCracker implements Application {
 			Group mdEntry = snapshot.getGroup(i, NoMDEntries.FIELD);
 
 			Entry entry = new Entry();
-			entry.setSide(mdEntry.getInt(MDEntryType.FIELD));
-			entry.setPx(mdEntry.getDouble(MDEntryPx.FIELD));
-			entry.setAmt(mdEntry.getDouble(MDEntrySize.FIELD));
-			if (mdEntry.isSetField(Text.FIELD) && INDICATIVE_TEXT.equals(mdEntry.getString(Text.FIELD))) {
+//			entry.setSide(mdEntry.getInt(MDEntryType.FIELD)); // TODO いる？
+			entry.setPx(mdEntry.getDecimal(MDEntryPx.FIELD));
+			entry.setAmt(mdEntry.getDecimal(MDEntrySize.FIELD));
+			if (mdEntry.isSetField(Text.FIELD) && fixSettings.getIndicativeText().equals(mdEntry.getString(Text.FIELD))) {
 				entry.setIndicative(true);
 			}
 			if (MDEntryType.OFFER == mdEntry.getChar(MDEntryType.FIELD)) {
@@ -136,24 +137,24 @@ public class PriceApplication extends MessageCracker implements Application {
 
 			if (MDEntryType.OFFER == mdEntry.getChar(MDEntryType.FIELD)) {
 				if (mdEntry.isSetField(MDEntryPx.FIELD)) {
-					rate.getAskEntry().setPx(mdEntry.getDouble(MDEntryPx.FIELD));
+					rate.getAskEntry().setPx(mdEntry.getDecimal(MDEntryPx.FIELD));
 				}
 				if (mdEntry.isSetField(MDEntrySize.FIELD)) {
-					rate.getAskEntry().setAmt(mdEntry.getDouble(MDEntrySize.FIELD));
+					rate.getAskEntry().setAmt(mdEntry.getDecimal(MDEntrySize.FIELD));
 				}
-				if (mdEntry.isSetField(Text.FIELD) && INDICATIVE_TEXT.equals(mdEntry.getString(Text.FIELD))) {
+				if (mdEntry.isSetField(Text.FIELD) && fixSettings.getIndicativeText().equals(mdEntry.getString(Text.FIELD))) {
 					rate.getAskEntry().setIndicative(true);
 				} else {
 					rate.getAskEntry().setIndicative(false);
 				}
 			} else {
 				if (mdEntry.isSetField(MDEntryPx.FIELD)) {
-					rate.getBidEntry().setPx(mdEntry.getDouble(MDEntryPx.FIELD));
+					rate.getBidEntry().setPx(mdEntry.getDecimal(MDEntryPx.FIELD));
 				}
 				if (mdEntry.isSetField(MDEntrySize.FIELD)) {
-					rate.getBidEntry().setAmt(mdEntry.getDouble(MDEntrySize.FIELD));
+					rate.getBidEntry().setAmt(mdEntry.getDecimal(MDEntrySize.FIELD));
 				}
-				if (mdEntry.isSetField(Text.FIELD) && INDICATIVE_TEXT.equals(mdEntry.getString(Text.FIELD))) {
+				if (mdEntry.isSetField(Text.FIELD) && fixSettings.getIndicativeText().equals(mdEntry.getString(Text.FIELD))) {
 					rate.getBidEntry().setIndicative(true);
 				} else {
 					rate.getBidEntry().setIndicative(false);

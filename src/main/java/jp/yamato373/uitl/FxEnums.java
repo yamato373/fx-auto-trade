@@ -1,4 +1,4 @@
-package jp.yamato373.uitll;
+package jp.yamato373.uitl;
 
 
 public class FxEnums {

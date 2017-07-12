@@ -1,5 +1,6 @@
 package jp.yamato373.web.controller;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jp.yamato373.order.model.OrderResult;
 import jp.yamato373.order.service.OrderService;
-import jp.yamato373.uitll.FxEnums.Side;
+import jp.yamato373.uitl.FxEnums.Side;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
@@ -25,7 +26,7 @@ public class OrderController {
 			@RequestParam("cp") String cp,
 			@RequestParam("symbol") String symbol,
 			@RequestParam("side") String side,
-			@RequestParam("amt") Double amt) {
+			@RequestParam("amt") BigDecimal amt) {
 
 		log.info("注文APIが叩かれたよ！cp=" + cp + " symbol=" + symbol + " side=" + Side.valueOf(side) + " amt=" + amt);
 

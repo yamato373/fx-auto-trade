@@ -80,8 +80,8 @@ public class OrderSender {
 		newOrderSingle.set(new Account(ACCOUNT));
 		newOrderSingle.set(new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE));
 		newOrderSingle.set(new Symbol(orderResult.getSymbol()));
-		newOrderSingle.set(new OrderQty(orderResult.getOrderQty()));
-		newOrderSingle.set(new Price(orderResult.getPrice()));
+		newOrderSingle.set(new OrderQty(orderResult.getOrderQty().doubleValue()));
+		newOrderSingle.set(new Price(orderResult.getPrice().doubleValue()));
 		newOrderSingle.set(new TimeInForce(TimeInForce.FILL_OR_KILL));
 
 		sendMessage(newOrderSingle);

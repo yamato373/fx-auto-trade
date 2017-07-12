@@ -1,1 +1,23 @@
 server.port: 80
+
+appSettings:
+  cp: oanda
+  symbol: USD/JPY
+  
+  fix:
+    # ログオンメッセージのヘッダーに設定するパスワード
+    password: XXXXX
+    # CPが気配値のプライスであることを示す文字列
+    indicativeText: Indicative
+    
+  trade:
+    # レンジの上限
+    uppoerLimit: 120
+    # レンジの下限
+    lowerLimit: 75
+    # 1トラップの注文金額
+    orderAmount: 100
+    # トラップ値幅
+    trapRange: 0.1
+    # トラップの境界
+    trapTiming: 0.07

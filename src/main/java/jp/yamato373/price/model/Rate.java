@@ -1,5 +1,6 @@
 package jp.yamato373.price.model;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import lombok.Data;
@@ -50,17 +51,17 @@ public class Rate {
 		 *
 		 * 0 = Bid（売り) 1 = Offer（買い）
 		 */
-		int side;
+//		int side; TODO いる？
 
 		/**
 		 * 値段
 		 */
-		double px;
+		BigDecimal px;
 
 		/**
 		 * 数量
 		 */
-		double amt;
+		BigDecimal amt;
 
 		/**
 		 * 気配値
