@@ -1,7 +1,8 @@
 package jp.yamato373.cache;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
@@ -10,18 +11,17 @@ import jp.yamato373.trade.model.Position;
 @Component
 public class PositionCache {
 
-	Set<Position> positionSet = new HashSet<>();
+	Map<BigDecimal, Position> positionMap = new HashMap<>();
 
-	public Set<Position> getAll(){
-		return positionSet;
+	public Map<BigDecimal, Position> getAll(){
+		return positionMap;
 	}
 
 	public void add(Position position){
-		positionSet.add(position);
+		positionMap.put(position.getTrapPx(), position);
 	}
 
-	public void remove(Position position){
-		positionSet.remove(position);
+	public void remove(BigDecimal trapPx){
+		positionMap.remove(trapPx);
 	}
-
 }

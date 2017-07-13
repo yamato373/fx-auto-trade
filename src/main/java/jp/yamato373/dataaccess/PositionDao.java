@@ -1,6 +1,7 @@
 package jp.yamato373.dataaccess;
 
-import java.util.Set;
+import java.math.BigDecimal;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -14,10 +15,7 @@ public class PositionDao {
 	@Autowired
 	PositionCache positionCache;
 
-	public Set<Position> getAll(){
+	public Map<BigDecimal, Position> getAll(){
 		return positionCache.getAll();
 	}
-
-	
-
 }
