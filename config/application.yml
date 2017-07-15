@@ -1,14 +1,22 @@
+# Spring
 server.port: 80
 
+# TradeApp
 appSettings:
   cp: oanda
   symbol: USD/JPY
   
   fix:
     # ログオンメッセージのヘッダーに設定するパスワード
-    password: XXXXX
+    password: ${appSettings.fix.password}
+    # オーダーで設定する口座番号
+    account: ${appSettings.fix.account}
     # CPが気配値のプライスであることを示す文字列
     indicativeText: Indicative
+    # サブスクライブチェック間隔
+    subscribeCheckInterval: 60
+    # 無配信閾値
+    delayThreshold: 60
     
   trade:
     # レンジの上限

@@ -3,7 +3,9 @@ package jp.yamato373.fix.model;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import jp.yamato373.fix.util.FixSettings;
 import jp.yamato373.order.service.OrderService;
+import jp.yamato373.trade.service.TradeService;
 import lombok.extern.slf4j.Slf4j;
 import quickfix.Application;
 import quickfix.DoNotSend;
@@ -21,13 +23,17 @@ import quickfix.fix44.MessageCracker;
 @Slf4j
 public class OrderApplication extends MessageCracker implements Application {
 
-	private final String PASSWARD = "XXXXX";
-
 	@Autowired
 	OrderSender orderSender;
 
 	@Autowired
 	OrderService orderService;
+
+	@Autowired
+	TradeService tradeService;
+
+	@Autowired
+	FixSettings fixSettings;
 
 	@Override
 	public void onCreate(SessionID sessionID) {
@@ -49,7 +55,7 @@ public class OrderApplication extends MessageCracker implements Application {
 
 		try {
 			if (MsgType.LOGON.equals(message.getHeader().getString(MsgType.FIELD))) {
-				message.getHeader().setString(Password.FIELD, PASSWARD);
+				message.getHeader().setString(Password.FIELD, fixSettings.getPassword());
 			}
 		} catch (FieldNotFound e) {
 			log.error("toAdminの処理で失敗！", e);
@@ -75,6 +81,6 @@ public class OrderApplication extends MessageCracker implements Application {
 			throws FieldNotFound, UnsupportedMessageType, IncorrectTagValue {
 		log.info("オーダー結果が返ってきたよ！"+ executionReport);
 
-		orderService.report(executionReport);
+		tradeService.addPosition(orderService.report(executionReport));
 	}
 }

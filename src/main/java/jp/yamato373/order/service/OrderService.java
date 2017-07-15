@@ -8,9 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import jp.yamato373.dataaccess.OrderResultDao;
+import jp.yamato373.dataaccess.PositionDao;
 import jp.yamato373.dataaccess.RateDao;
 import jp.yamato373.fix.service.FixOrderService;
 import jp.yamato373.order.model.OrderResult;
+import jp.yamato373.trade.model.Position;
 import jp.yamato373.uitl.FxEnums;
 import jp.yamato373.uitl.FxEnums.Side;
 import jp.yamato373.uitl.FxEnums.Status;
@@ -27,6 +29,9 @@ public class OrderService {
 
 	@Autowired
 	OrderResultDao orderResultDao;
+
+	@Autowired
+	PositionDao positionDao;
 
 	@Autowired
 	FixOrderService fixOrderService;
@@ -64,12 +69,28 @@ public class OrderService {
 	}
 
 	/**
+	 * ポジションを引数で指定して売りオーダーする
+	 *
+	 * @param cp
+	 * @param symbol
+	 * @param position
+	 * @return
+	 */
+	public OrderResult bidOrder(String cp, String symbol, Position position) {
+		BigDecimal price = rateDao.getEntry(symbol, Side.BID).getPx();
+		OrderResult orderResult = new OrderResult(Status.BEFORE, generatClOrdId(), symbol, Side.BID, new Date(), position.getAgreedAmt(), price);
+		positionDao.setBidOrder(position.getTrapPx(), orderResult.getClOrdId());
+		return order(orderResult);
+	}
+
+	/**
 	 * オーダー結果受信処理
 	 *
 	 * @param executionReport
+	 * @return orderResult
 	 * @throws FieldNotFound
 	 */
-	public void report(ExecutionReport executionReport) throws FieldNotFound {
+	public OrderResult report(ExecutionReport executionReport) throws FieldNotFound {
 
 		String clOrdId = executionReport.getClOrdID().getValue();
 		OrderResult orderResult = orderResultDao.get(clOrdId);
@@ -87,8 +108,9 @@ public class OrderService {
 		}
 
 		orderResultDao.put(clOrdId, orderResult);
-
 		log.info("注文結果を格納したよ！"+ orderResult);
+
+		return orderResult;
 	}
 
 	private OrderResult order(OrderResult orderResult) {

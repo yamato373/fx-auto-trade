@@ -7,8 +7,10 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import jp.yamato373.fix.util.FixSettings;
 import jp.yamato373.order.model.OrderResult;
 import lombok.extern.slf4j.Slf4j;
 import quickfix.Message;
@@ -31,7 +33,8 @@ import quickfix.fix44.NewOrderSingle;
 @Slf4j
 public class OrderSender {
 
-	private static final String ACCOUNT = "999999"; // TODO 設定ファイルで読み込めるようにする
+	@Autowired
+	FixSettings fixSettings;
 
 	SessionID sessionId;
 
@@ -77,7 +80,7 @@ public class OrderSender {
 				new Side(orderResult.getSide().getFieldCode()),
 				new TransactTime(orderResult.getOrderTime()),
 				new OrdType(OrdType.LIMIT));
-		newOrderSingle.set(new Account(ACCOUNT));
+		newOrderSingle.set(new Account(fixSettings.getAccount()));
 		newOrderSingle.set(new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE));
 		newOrderSingle.set(new Symbol(orderResult.getSymbol()));
 		newOrderSingle.set(new OrderQty(orderResult.getOrderQty().doubleValue()));

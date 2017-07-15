@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jp.yamato373.order.model.OrderResult;
 import jp.yamato373.order.service.OrderService;
+import jp.yamato373.trade.model.Position;
+import jp.yamato373.trade.service.TradeService;
 import jp.yamato373.uitl.FxEnums.Side;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,6 +22,9 @@ public class OrderController {
 
 	@Autowired
 	OrderService orderService;
+
+	@Autowired
+	TradeService tradeService;
 
 	@RequestMapping(value = "/order", method = RequestMethod.GET)
 	public OrderResult order(
@@ -39,5 +44,13 @@ public class OrderController {
 		log.info("注文履歴APIが叩かれたよ！");
 
 		return orderService.getOrderResultAll();
+	}
+
+	@RequestMapping(value = "/order/positions", method = RequestMethod.GET)
+	public Map<BigDecimal,Position> getpositions() {
+
+		log.info("ポジションAPIが叩かれたよ！");
+
+		return tradeService.getAllPosition();
 	}
 }

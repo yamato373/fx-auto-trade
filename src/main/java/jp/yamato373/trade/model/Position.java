@@ -2,9 +2,11 @@ package jp.yamato373.trade.model;
 
 import java.math.BigDecimal;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 public class Position {
 
 	/**
@@ -21,4 +23,14 @@ public class Position {
 	 * 約定数量
 	 */
 	BigDecimal agreedAmt;
+
+	/**
+	 * 買い注文番号
+	 */
+	String askClOrderId;
+
+	/**
+	 * 売り番号
+	 */
+	String bidClOrderId;
 }

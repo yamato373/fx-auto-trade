@@ -5,16 +5,12 @@ import org.springframework.stereotype.Service;
 
 import jp.yamato373.dataaccess.RateDao;
 import jp.yamato373.price.model.Rate;
-import jp.yamato373.trade.service.TradeService;
 
 @Service
 public class PriceService {
 
 	@Autowired
 	RateDao rateDao;
-
-	@Autowired
-	TradeService tradeService;
 
 	public Rate getRate(String symbol) {
 		return rateDao.get(symbol);
@@ -30,6 +26,5 @@ public class PriceService {
 
 	public void setRate(String symbol, Rate rate) {
 		rateDao.set(symbol, rate);
-		tradeService.checkAndOrder(symbol, rate); // TODO イベントにしたい
 	}
 }

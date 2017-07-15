@@ -13,7 +13,9 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import jp.yamato373.fix.util.FixSettings;
 import jp.yamato373.price.service.PriceService;
+import jp.yamato373.uitl.AppSettings;
 import lombok.extern.slf4j.Slf4j;
 import quickfix.Message;
 import quickfix.Session;
@@ -36,18 +38,13 @@ public class Subscription {
 	@Autowired
 	PriceService priceService;
 
-	private final String SYMBOL = "USD/JPY";
+	@Autowired
+	FixSettings fixSettings;
+
+	@Autowired
+	AppSettings appSettings;
+
 	private final int MARKET_DEPTH = 1;
-
-	/**
-	 * サブスクライブチェック間隔
-	 */
-	private final int INTERVAL = 60;
-
-	/**
-	 * 遅延閾値
-	 */
-	private final int delayThreshold = 60;
 
 	/**
 	 * 初回サブスクライブフラグ
@@ -88,7 +85,7 @@ public class Subscription {
 			} else {
 				Calendar cal = Calendar.getInstance();
 				cal.setTime(lastReceivetime);
-				cal.add(Calendar.SECOND, delayThreshold);
+				cal.add(Calendar.SECOND, fixSettings.getDelayThreshold());
 
 				// 無配信検知
 				if (0 >= cal.getTime().compareTo(new Date())) {
@@ -97,7 +94,7 @@ public class Subscription {
 					subscribe();
 				}
 			}
-		}, 0, INTERVAL, TimeUnit.SECONDS);
+		}, 0, fixSettings.getSubscribeCheckInterval(), TimeUnit.SECONDS);
 	}
 
 	/**
@@ -131,7 +128,7 @@ public class Subscription {
 
 		log.info("サブスクライブするよ！");
 
-		mDReqID = SYMBOL + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+		mDReqID = appSettings.getSymbol() + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 
 		MarketDataRequest marketDataRequest = new MarketDataRequest();
 
@@ -147,7 +144,7 @@ public class Subscription {
 		marketDataRequest.addGroup(noMDEntryTypes);
 
 		NoRelatedSym noRelatedSym = new NoRelatedSym();
-		noRelatedSym.set(new Symbol(SYMBOL));
+		noRelatedSym.set(new Symbol(appSettings.getSymbol()));
 		marketDataRequest.addGroup(noRelatedSym);
 
 		send(marketDataRequest);
@@ -179,12 +176,12 @@ public class Subscription {
 		marketDataRequest.addGroup(noMDEntryTypes);
 
 		NoRelatedSym noRelatedSym = new NoRelatedSym();
-		noRelatedSym.set(new Symbol(SYMBOL));
+		noRelatedSym.set(new Symbol(appSettings.getSymbol()));
 		marketDataRequest.addGroup(noRelatedSym);
 
 		send(marketDataRequest);
 
-		priceService.clearRate(SYMBOL);
+		priceService.clearRate(appSettings.getSymbol());
 	}
 
 	/**

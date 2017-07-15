@@ -9,6 +9,7 @@ import jp.yamato373.fix.util.FixSettings;
 import jp.yamato373.price.model.Rate;
 import jp.yamato373.price.model.Rate.Entry;
 import jp.yamato373.price.service.PriceService;
+import jp.yamato373.trade.service.TradeService;
 import lombok.extern.slf4j.Slf4j;
 import quickfix.Application;
 import quickfix.DoNotSend;
@@ -42,6 +43,9 @@ public class PriceApplication extends MessageCracker implements Application {
 
 	@Autowired
 	PriceService priceService;
+
+	@Autowired
+	TradeService tradeService;
 
 	@Override
 	public void onCreate(SessionID sessionID) {
@@ -92,8 +96,6 @@ public class PriceApplication extends MessageCracker implements Application {
 
 			crack(message, sessionID);
 		}
-
-		// new MessageProcessor(message, sessionID);
 	}
 
 	public void onMessage(quickfix.fix44.MarketDataSnapshotFullRefresh snapshot, SessionID sessionID)
@@ -163,5 +165,6 @@ public class PriceApplication extends MessageCracker implements Application {
 		}
 		priceService.setRate(symbol, rate);
 		subscription.updataLastReceivetime();
+		tradeService.checkAndOrder(symbol, rate);
 	}
 }

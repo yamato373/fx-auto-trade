@@ -10,5 +10,8 @@ import lombok.Data;
 @Data
 public class FixSettings {
 	private String password;
+	private String account;
 	private String indicativeText;
+	private int subscribeCheckInterval;
+	private int delayThreshold;
 }

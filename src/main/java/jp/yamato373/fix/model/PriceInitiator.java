@@ -40,7 +40,7 @@ public class PriceInitiator {
 	@Autowired
 	public PriceInitiator(PriceApplication priceApplication, Subscription subscription, PriceService priceService)
 			throws ConfigError {
-		sessionSettings = new SessionSettings("price.cfg");
+		sessionSettings = new SessionSettings("config/price.cfg");
 		this.priceApplication = priceApplication;
 		this.subscription = subscription;
 		this.priceService = priceService;
