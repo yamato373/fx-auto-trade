@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jp.yamato373.domain.model.OrderResult;
 import jp.yamato373.domain.model.Position;
-import jp.yamato373.domain.service.AutoTradeServiceImpl;
-import jp.yamato373.domain.service.shared.OrderServiceImpl;
+import jp.yamato373.domain.service.AutoTradeService;
+import jp.yamato373.domain.service.shared.OrderService;
 import jp.yamato373.uitl.FxEnums.Side;
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,10 +21,10 @@ import lombok.extern.slf4j.Slf4j;
 public class OrderController {
 
 	@Autowired
-	OrderServiceImpl orderService;
+	OrderService orderService;
 
 	@Autowired
-	AutoTradeServiceImpl tradeService;
+	AutoTradeService tradeService;
 
 	@RequestMapping(value = "/order", method = RequestMethod.GET)
 	public OrderResult order(

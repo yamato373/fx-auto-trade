@@ -3,3 +3,5 @@
 .factorypath
 .classpath
 target/*
+fix/*
+log/*

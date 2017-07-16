@@ -4,9 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import jp.yamato373.domain.model.OrderResult;
-import jp.yamato373.domain.service.AutoTradeServiceImpl;
+import jp.yamato373.domain.service.AutoTradeService;
 import jp.yamato373.domain.service.FixService;
-import jp.yamato373.domain.service.shared.OrderServiceImpl;
+import jp.yamato373.domain.service.shared.OrderService;
 import jp.yamato373.uitl.FixSettings;
 import lombok.extern.slf4j.Slf4j;
 import quickfix.Application;
@@ -29,10 +29,10 @@ public class OrderApplication extends MessageCracker implements Application {
 	FixService fixService;
 
 	@Autowired
-	OrderServiceImpl orderService;
+	OrderService orderService;
 
 	@Autowired
-	AutoTradeServiceImpl autoTradeService;
+	AutoTradeService autoTradeService;
 
 	@Autowired
 	FixSettings fixSettings;

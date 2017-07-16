@@ -42,7 +42,7 @@ public class PriceInitiator {
 
 	@Autowired
 	public PriceInitiator(PriceApplication priceApplication) throws ConfigError {
-		sessionSettings = new SessionSettings("config/price.cfg");
+		sessionSettings = new SessionSettings("./config/price.cfg");
 		this.priceApplication = priceApplication;
 	}
 
