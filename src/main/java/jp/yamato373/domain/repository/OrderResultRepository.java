@@ -1,6 +1,6 @@
 package jp.yamato373.domain.repository;
 
-import java.util.Set;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -32,7 +32,7 @@ public class OrderResultRepository {
 		}
 	}
 
-	public Set<OrderResult> findAll() {
+	public List<OrderResult> findAll() {
 		return orderResultTable.findAll();
 	}
 

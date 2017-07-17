@@ -1,6 +1,7 @@
 package jp.yamato373.app.controller;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +26,8 @@ public class TradeController {
 	@RequestMapping(value = "/trade/positions", method = RequestMethod.GET)
 	public Collection<Position> getpositions() {
 		log.info("ポジション取得API実行。");
-		return tradeService.getAllPosition();
+		List<Position> list = tradeService.getAllPosition();
+		list.sort((a, b) -> a.getTrapPx().compareTo(b.getTrapPx()));
+		return list;
 	}
 }

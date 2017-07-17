@@ -1,7 +1,7 @@
 package jp.yamato373.app.controller;
 
 import java.math.BigDecimal;
-import java.util.Collection;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jp.yamato373.domain.model.entry.OrderResult;
-import jp.yamato373.domain.model.entry.Position;
 import jp.yamato373.domain.service.AutoTradeService;
 import jp.yamato373.domain.service.shared.OrderService;
 import jp.yamato373.uitl.FxEnums.Side;
@@ -33,14 +32,10 @@ public class OrderController {
 	}
 
 	@RequestMapping(value = "/order/history", method = RequestMethod.GET)
-	public Collection<OrderResult> getOrderHistory() {
+	public List<OrderResult> getOrderHistory() {
 		log.info("注文履歴取得API実行。");
-		return orderService.getOrderResultAll();
-	}
-
-	@RequestMapping(value = "/order/positions", method = RequestMethod.GET)
-	public Collection<Position> getpositions() {
-		log.info("ポジション取得API実行。");
-		return tradeService.getAllPosition();
+		List<OrderResult> list = orderService.getOrderResultAll();
+		list.sort((a, b) -> a.getClOrdId().compareTo(b.getClOrdId()));
+		return list;
 	}
 }

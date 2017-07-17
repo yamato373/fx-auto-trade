@@ -1,8 +1,8 @@
 package jp.yamato373.db;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Set;
 
 import org.springframework.stereotype.Component;
 
@@ -15,7 +15,7 @@ import jp.yamato373.domain.model.entry.OrderResult;
 @Component
 public class OrderResultTable {
 
-	Set<OrderResult> orderResultTable = new HashSet<>();
+	List<OrderResult> orderResultTable = new ArrayList<>();
 
 	public void insert(OrderResult orderResult) {
 		orderResultTable.add(orderResult);
@@ -31,7 +31,7 @@ public class OrderResultTable {
 		return orderResult;
 	}
 
-	public Set<OrderResult> findAll() {
+	public List<OrderResult> findAll() {
 		return orderResultTable;
 	}
 }

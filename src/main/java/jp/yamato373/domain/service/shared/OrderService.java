@@ -2,7 +2,7 @@ package jp.yamato373.domain.service.shared;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -85,7 +85,7 @@ public class OrderService {
 	 *
 	 * @return
 	 */
-	public Set<OrderResult> getOrderResultAll() {
+	public List<OrderResult> getOrderResultAll() {
 		return orderResultRepository.findAll();
 	}
 
