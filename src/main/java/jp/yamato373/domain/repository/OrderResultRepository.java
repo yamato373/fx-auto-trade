@@ -1,15 +1,39 @@
 package jp.yamato373.domain.repository;
 
-import java.util.Map;
+import java.util.Set;
 
-import jp.yamato373.domain.model.OrderResult;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
-public interface OrderResultRepository {
+import jp.yamato373.db.OrderResultTable;
+import jp.yamato373.domain.model.entry.OrderResult;
 
-	Map<String, OrderResult> getAll();
+@Repository
+public class OrderResultRepository {
 
-	void put(String clOrdId, OrderResult orderResult);
+	@Autowired
+	OrderResultTable orderResultTable;
 
-	OrderResult get(String clOrdId);
+	public OrderResult findOne(String clOrdId) {
+		return orderResultTable.findOne(clOrdId);
+	}
+
+	public void save(OrderResult orderResult) {
+		OrderResult or = orderResultTable.findOne(orderResult.getClOrdId());
+		if (or == null){
+			orderResultTable.insert(orderResult);
+		}else{
+			or.setExecId(orderResult.getExecId());
+			or.setExecTime(orderResult.getExecTime());
+			or.setLastPx(orderResult.getLastPx());
+			or.setLastQty(orderResult.getLastQty());
+			or.setOrderId(orderResult.getOrderId());
+			or.setRejReason(orderResult.getRejReason());
+		}
+	}
+
+	public Set<OrderResult> findAll() {
+		return orderResultTable.findAll();
+	}
 
 }

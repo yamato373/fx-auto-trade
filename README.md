@@ -4,7 +4,7 @@
 
 * 注文
 
-    - http://localhost/order?cp=oanda&symbol=USD/JPY&side=BID&amt=100000
+    - http://localhost/order?side=BID&amt=100000
         - side= BID / ASK
 
 * 注文履歴
@@ -15,10 +15,16 @@
 
 * レート取得
 
-    - http://localhost/price?cp=oanda&symbol=USD/JPY
+    - http://localhost/price
+
+## trade
+
+* 全ポジション取得
+
+    - http://localhost/trade/positions
 
 # 予定
 
 * 約定したらメールを送信
 
-*
+* 各設定をWEB画面で可能に

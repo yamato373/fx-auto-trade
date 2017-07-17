@@ -4,12 +4,14 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * 1バンド分のレート情報
  *
  */
 @Data
+@NoArgsConstructor
 public class Rate {
 
 	/**
@@ -35,9 +37,6 @@ public class Rate {
 	 */
 	Entry bidEntry;
 
-	public Rate() {
-	}
-
 	public Rate(String symbol, Date sendingTime) {
 		this.symbol = symbol;
 		this.SendingTime = sendingTime;
@@ -45,13 +44,6 @@ public class Rate {
 
 	@Data
 	public static class Entry {
-
-		/**
-		 * サイド
-		 *
-		 * 0 = Bid（売り) 1 = Offer（買い）
-		 */
-//		int side; TODO いる？
 
 		/**
 		 * 値段

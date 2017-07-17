@@ -5,10 +5,9 @@ public class FxEnums {
 
 	public static enum Status{
 
-		BEFORE(0, "注文前", 'B'),
-		ORDER(1, "注文中", '0'),
-		FILL(2, "約定", '2'),
-		REJECT(3, "リジェクト", '8')
+		ORDER(0, "注文中", '0'),
+		FILL(1, "約定", '2'),
+		REJECT(2, "リジェクト", '8')
 	    ;
 
 		private final int code;

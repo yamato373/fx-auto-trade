@@ -8,12 +8,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import jp.yamato373.domain.service.PriceService;
+import jp.yamato373.domain.service.shared.RateService;
 import jp.yamato373.uitl.AppSettings;
 import jp.yamato373.uitl.FixSettings;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +34,7 @@ import quickfix.fix44.MarketDataRequest.NoRelatedSym;
 public class Subscription {
 
 	@Autowired
-	PriceService priceService;
+	RateService rateService;
 
 	@Autowired
 	FixSettings fixSettings;
@@ -65,18 +63,12 @@ public class Subscription {
 
 	private final ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
 
-	@PostConstruct
-	public void init() {
-		log.info("Subscriptionクラスを初期化");
-	}
-
 	public void start(SessionID sessionId) {
-
 		this.sessionId = sessionId;
 
 		service.scheduleWithFixedDelay(() -> {
 
-			log.info("Subscriptionチェックタスクを実行");
+			log.info("Subscriptionチェックタスクを実行。");
 
 			// 初回subscribe
 			if (firstFlg) {
@@ -89,7 +81,7 @@ public class Subscription {
 
 				// 無配信検知
 				if (0 >= cal.getTime().compareTo(new Date())) {
-					log.info("無配信検知");
+					log.info("無配信検知。");
 					unsubscribe();
 					subscribe();
 				}
@@ -101,7 +93,7 @@ public class Subscription {
 	 * リクエストIDを初期化
 	 */
 	public void clearMDReqID() {
-		log.info("リクエストID初期化");
+		log.info("リクエストID初期化。");
 		mDReqID = null;
 	}
 
@@ -125,9 +117,6 @@ public class Subscription {
 	 * @param sessionID
 	 */
 	private void subscribe() {
-
-		log.info("Subscription開始");
-
 		mDReqID = appSettings.getSymbol() + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 
 		MarketDataRequest marketDataRequest = new MarketDataRequest();
@@ -148,6 +137,8 @@ public class Subscription {
 		marketDataRequest.addGroup(noRelatedSym);
 
 		send(marketDataRequest);
+
+		log.info("subscribe送信。");
 	}
 
 	/**
@@ -159,9 +150,6 @@ public class Subscription {
 	 * @param sessionID
 	 */
 	public void unsubscribe() {
-
-		log.info("Unsubscribe開始");
-
 		MarketDataRequest marketDataRequest = new MarketDataRequest();
 
 		marketDataRequest.set(new MDReqID(mDReqID));
@@ -181,7 +169,9 @@ public class Subscription {
 
 		send(marketDataRequest);
 
-		priceService.clearRate(appSettings.getSymbol());
+		log.info("Unsubscribe送信");
+
+		rateService.clearRate();
 	}
 
 	/**
@@ -194,7 +184,7 @@ public class Subscription {
 		try {
 			Session.sendToTarget(message, sessionId);
 		} catch (SessionNotFound e) {
-			log.error("subscribe送信に失敗", e);
+			log.error("プライスメッセージ送信に失敗。", e);
 		}
 	}
 

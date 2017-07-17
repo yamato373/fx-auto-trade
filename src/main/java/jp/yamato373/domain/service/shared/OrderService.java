@@ -1,64 +1,101 @@
 package jp.yamato373.domain.service.shared;
 
 import java.math.BigDecimal;
-import java.util.Map;
+import java.util.Date;
+import java.util.Set;
 
-import jp.yamato373.domain.model.OrderResult;
-import jp.yamato373.domain.model.Position;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import jp.yamato373.domain.model.cache.RateCache;
+import jp.yamato373.domain.model.entry.OrderResult;
+import jp.yamato373.domain.model.fix.OrderSender;
+import jp.yamato373.domain.repository.OrderResultRepository;
+import jp.yamato373.uitl.AppSettings;
 import jp.yamato373.uitl.FxEnums.Side;
-import quickfix.FieldNotFound;
-import quickfix.fix44.ExecutionReport;
+import jp.yamato373.uitl.FxEnums.Status;
+import lombok.extern.slf4j.Slf4j;
 
-public interface OrderService {
+@Service
+@Slf4j
+public class OrderService {
+
+	@Autowired
+	RateCache rateCache;
+
+	@Autowired
+	OrderResultRepository orderResultRepository;
+
+	@Autowired
+	OrderSender orderSender;
+
+	@Autowired
+	AppSettings appSettings;
+
+	private int clOrdIdCounterr = 0;
 
 	/**
 	 * 最新のプライスでオーダーする
 	 *
-	 * @param cp
-	 * @param symbol
 	 * @param side
 	 * @param amt
 	 * @return
 	 */
-	OrderResult order(String cp, String symbol, Side side, BigDecimal amt);
+	public OrderResult order(Side side, BigDecimal amt) {
+		BigDecimal px = rateCache.getEntry(side).getPx();
+		OrderResult or = new OrderResult(generatClOrdId(), Status.ORDER, appSettings.getSymbol(), side, new Date(), amt, px);
+		return order(or);
+	}
 
 	/**
 	 * プライスを指定してオーダーする
 	 *
-	 * @param cp
-	 * @param symbol
 	 * @param side
 	 * @param amt
 	 * @param price
 	 * @return
 	 */
-	OrderResult order(String cp, String symbol, Side side, BigDecimal amt, BigDecimal price);
-
+	public OrderResult order(Side side, BigDecimal amt, BigDecimal price) {
+		OrderResult or = new OrderResult(generatClOrdId(), Status.ORDER, appSettings.getSymbol(), side, new Date(), amt, price);
+		return order(or);
+	}
 
 	/**
-	 * ポジションを指定して売りオーダーする
+	 * ClOrdIDを元に送信時のOrderResultを取得
 	 *
-	 * @param cp
-	 * @param symbol
-	 * @param position
+	 * @param ClOrdId
 	 * @return
 	 */
-	OrderResult bidOrder(String cp, String symbol, Position position);
+	public OrderResult getOrderResult(String clOrdId) {
+		return orderResultRepository.findOne(clOrdId);
+	}
 
 	/**
-	 * オーダー結果受信処理
+	 * 注文結果反映済みのOrderResultを格納
 	 *
-	 * @param executionReport
-	 * @return orderResult
-	 * @throws FieldNotFound
+	 * @param OrderResult
 	 */
-	OrderResult report(ExecutionReport executionReport) throws FieldNotFound;
+	public void setOrderResult(OrderResult or) {
+		orderResultRepository.save(or);
+		log.info("注文結果格納" + or);
+	}
 
 	/**
 	 * 全注文履歴
 	 *
 	 * @return
 	 */
-	Map<String, OrderResult> getOrderResultAll();
+	public Set<OrderResult> getOrderResultAll() {
+		return orderResultRepository.findAll();
+	}
 
+	private OrderResult order(OrderResult or) {
+		orderResultRepository.save(or);
+		orderSender.sendNewOrderSingle(or);
+		return or;
+	}
+
+	private String generatClOrdId() {
+		return Integer.toString(clOrdIdCounterr++); // TODO 永続的なシーケンスにする
+	}
 }

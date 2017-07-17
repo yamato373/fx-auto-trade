@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import jp.yamato373.domain.service.FixService;
-import jp.yamato373.domain.service.PriceService;
+import jp.yamato373.domain.service.shared.FixService;
+import jp.yamato373.domain.service.shared.RateService;
 import lombok.extern.slf4j.Slf4j;
 import quickfix.ConfigError;
 import quickfix.DefaultMessageFactory;
@@ -28,7 +28,7 @@ import quickfix.SocketInitiator;
 public class PriceInitiator {
 
 	@Autowired
-	PriceService priceService;
+	RateService rateService;
 
 	@Autowired
 	FixService fixService;
@@ -68,7 +68,7 @@ public class PriceInitiator {
 		if (!StringUtils.isEmpty(fixService.getMDReqID())) {
 			fixService.unsubscribe();
 		}
-		priceService.clearAllRate();
+		rateService.clearRate();
 		logout();
 	}
 

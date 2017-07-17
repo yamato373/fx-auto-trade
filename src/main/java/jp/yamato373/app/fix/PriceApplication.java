@@ -7,9 +7,9 @@ import org.springframework.util.StringUtils;
 
 import jp.yamato373.domain.model.Rate;
 import jp.yamato373.domain.model.Rate.Entry;
-import jp.yamato373.domain.service.AutoTradeServiceImpl;
-import jp.yamato373.domain.service.FixService;
-import jp.yamato373.domain.service.PriceService;
+import jp.yamato373.domain.service.AutoTradeService;
+import jp.yamato373.domain.service.shared.FixService;
+import jp.yamato373.domain.service.shared.RateService;
 import jp.yamato373.uitl.FixSettings;
 import lombok.extern.slf4j.Slf4j;
 import quickfix.Application;
@@ -28,7 +28,6 @@ import quickfix.field.MsgType;
 import quickfix.field.NoMDEntries;
 import quickfix.field.Password;
 import quickfix.field.SendingTime;
-import quickfix.field.Symbol;
 import quickfix.field.Text;
 import quickfix.fix44.MessageCracker;
 
@@ -40,10 +39,10 @@ public class PriceApplication extends MessageCracker implements Application {
 	FixService fixService;
 
 	@Autowired
-	PriceService priceService;
+	RateService rateService;
 
 	@Autowired
-	AutoTradeServiceImpl autoTradeService;
+	AutoTradeService autoTradeService;
 
 	@Autowired
 	FixSettings fixSettings;
@@ -54,18 +53,17 @@ public class PriceApplication extends MessageCracker implements Application {
 
 	@Override
 	public void onLogon(SessionID sessionID) {
-		log.info("プライスセッションのログイン完了");
+		log.info("プライスセッションのログイン完了。");
 		fixService.subscriptionStart(sessionID);
 	}
 
 	@Override
 	public void onLogout(SessionID sessionID) {
-		log.info("プライスセッションのログアウト完了");
+		log.info("プライスセッションのログアウト完了。");
 	}
 
 	@Override
 	public void toAdmin(quickfix.Message message, SessionID sessionID) {
-
 		try {
 			if (MsgType.LOGON.equals(message.getHeader().getString(MsgType.FIELD))) {
 				message.getHeader().setString(Password.FIELD, fixSettings.getPassword());
@@ -87,14 +85,13 @@ public class PriceApplication extends MessageCracker implements Application {
 	@Override
 	public void fromApp(quickfix.Message message, SessionID sessionID)
 			throws FieldNotFound, IncorrectDataFormat, IncorrectTagValue, UnsupportedMessageType {
-
 		if (MsgType.MARKET_DATA_SNAPSHOT_FULL_REFRESH.equals(message.getHeader().getString(MsgType.FIELD))
 				|| MsgType.MARKET_DATA_INCREMENTAL_REFRESH.equals(message.getHeader().getString(MsgType.FIELD))) {
 
 			// リクエストIDがないのにプライスが来た場合
-			if (StringUtils.isEmpty(fixService.getMDReqID()))
+			if (StringUtils.isEmpty(fixService.getMDReqID())){
 				return;
-
+			}
 			crack(message, sessionID);
 		}
 	}
@@ -110,7 +107,6 @@ public class PriceApplication extends MessageCracker implements Application {
 			Group mdEntry = snapshot.getGroup(i, NoMDEntries.FIELD);
 
 			Entry entry = new Entry();
-//			entry.setSide(mdEntry.getInt(MDEntryType.FIELD)); // TODO いる？
 			entry.setPx(mdEntry.getDecimal(MDEntryPx.FIELD));
 			entry.setAmt(mdEntry.getDecimal(MDEntrySize.FIELD));
 			if (mdEntry.isSetField(Text.FIELD) && fixSettings.getIndicativeText().equals(mdEntry.getString(Text.FIELD))) {
@@ -122,7 +118,7 @@ public class PriceApplication extends MessageCracker implements Application {
 				rate.setBidEntry(entry);
 			}
 		}
-		priceService.setRate(symbol, rate);
+		rateService.setRate(rate);
 		fixService.updataLastReceivetime();
 	}
 
@@ -130,9 +126,7 @@ public class PriceApplication extends MessageCracker implements Application {
 			throws FieldNotFound, UnsupportedMessageType, IncorrectTagValue {
 
 		Rate rate = new Rate();
-		String symbol = incremental.getGroup(1, NoMDEntries.FIELD).getString(Symbol.FIELD);
-		BeanUtils.copyProperties(priceService.getRate(symbol), rate);
-
+		BeanUtils.copyProperties(rateService.getRate(), rate);
 		rate.setSendingTime(incremental.getHeader().getUtcTimeStamp(SendingTime.FIELD));
 
 		for (int i = 1; i <= incremental.getNoMDEntries().getValue(); ++i) {
@@ -164,8 +158,8 @@ public class PriceApplication extends MessageCracker implements Application {
 				}
 			}
 		}
-		priceService.setRate(symbol, rate);
+		rateService.setRate(rate);
 		fixService.updataLastReceivetime();
-		autoTradeService.checkAndOrder(symbol, rate);
+		autoTradeService.checkAndOrder(rate);
 	}
 }

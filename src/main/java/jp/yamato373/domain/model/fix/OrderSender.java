@@ -5,12 +5,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import jp.yamato373.domain.model.OrderResult;
+import jp.yamato373.domain.model.entry.OrderResult;
 import jp.yamato373.uitl.FixSettings;
 import lombok.extern.slf4j.Slf4j;
 import quickfix.Message;
@@ -42,13 +40,7 @@ public class OrderSender {
 
 	private final ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
 
-	@PostConstruct
-	public void init() {
-		log.info("OrderSenderクラスの初期化開始");
-	}
-
 	public void start(SessionID sessionId) {
-
 		this.sessionId = sessionId;
 
 		service.execute(() -> {
@@ -59,7 +51,7 @@ public class OrderSender {
 					Session.sendToTarget(message, sessionId);
 
 				} catch (InterruptedException | SessionNotFound e) {
-					log.error("メッセージ送信に失敗", e);
+					log.error("オーダーメッセージ送信に失敗。", e);
 				}
 			}
 		});
@@ -97,7 +89,7 @@ public class OrderSender {
 		try {
 			orderMessagedQueue.put(message);
 		} catch (InterruptedException e) {
-			log.error("送信メッセージの追加に失敗 message:" + message, e);
+			log.error("送信メッセージキューの追加に失敗。message:" + message, e);
 		}
 	}
 }

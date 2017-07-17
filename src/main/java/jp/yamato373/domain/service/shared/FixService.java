@@ -1,4 +1,4 @@
-package jp.yamato373.domain.service;
+package jp.yamato373.domain.service.shared;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -8,7 +8,7 @@ import jp.yamato373.domain.model.fix.Subscription;
 import quickfix.SessionID;
 
 @Service
-public class FixServiceImpl implements FixService {
+public class FixService {
 
 	@Autowired
 	OrderSender orderSender;
@@ -16,27 +16,22 @@ public class FixServiceImpl implements FixService {
 	@Autowired
 	Subscription subscription;
 
-	@Override
 	public void orderSenderStart(SessionID sessionID) {
 		orderSender.start(sessionID);
 	}
 
-	@Override
 	public void subscriptionStart(SessionID sessionID) {
 		subscription.start(sessionID);
 	}
 
-	@Override
 	public String getMDReqID() {
 		return subscription.getMDReqID();
 	}
 
-	@Override
 	public void updataLastReceivetime() {
 		subscription.updataLastReceivetime();
 	}
 
-	@Override
 	public void unsubscribe() {
 		subscription.unsubscribe();
 	}

@@ -1,13 +1,17 @@
 package jp.yamato373.app.fix;
 
+import java.math.BigDecimal;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import jp.yamato373.domain.model.OrderResult;
+import jp.yamato373.domain.model.entry.OrderResult;
 import jp.yamato373.domain.service.AutoTradeService;
-import jp.yamato373.domain.service.FixService;
+import jp.yamato373.domain.service.shared.FixService;
 import jp.yamato373.domain.service.shared.OrderService;
 import jp.yamato373.uitl.FixSettings;
+import jp.yamato373.uitl.FxEnums;
+import jp.yamato373.uitl.FxEnums.Status;
 import lombok.extern.slf4j.Slf4j;
 import quickfix.Application;
 import quickfix.DoNotSend;
@@ -43,13 +47,13 @@ public class OrderApplication extends MessageCracker implements Application {
 
 	@Override
 	public void onLogon(SessionID sessionID) {
-		log.info("オーダーセッションのログイン完了");
+		log.info("オーダーセッションのログイン完了。");
 		fixService.orderSenderStart(sessionID);
 	}
 
 	@Override
 	public void onLogout(SessionID sessionID) {
-		log.info("オーダーセッションのログアウト完了");
+		log.info("オーダーセッションのログアウト完了。");
 	}
 
 	@Override
@@ -80,9 +84,21 @@ public class OrderApplication extends MessageCracker implements Application {
 
 	public void onMessage(quickfix.fix44.ExecutionReport executionReport, SessionID sessionID)
 			throws FieldNotFound, UnsupportedMessageType, IncorrectTagValue {
-		log.info("オーダー結果受信 ExecutionReport:"+ executionReport);
+		log.info("オーダー結果受信。ExecutionReport:"+ executionReport);
 
-		OrderResult or = orderService.report(executionReport);
-		autoTradeService.addPosition(or);
+		OrderResult or = orderService.getOrderResult(executionReport.getClOrdID().getValue());
+
+		Status status = FxEnums.getStatus(executionReport.getOrdStatus().getValue());
+		or.setStatus(status);
+		or.setOrderId(executionReport.getOrderID().getValue());
+		or.setExecId(executionReport.getExecID().getValue());
+		or.setLastQty(BigDecimal.valueOf(executionReport.getLastQty().getValue()));
+		or.setLastPx(BigDecimal.valueOf(executionReport.getLastPx().getValue()));
+		or.setExecTime(executionReport.getTransactTime().getValue());
+		if (Status.REJECT.equals(status)){
+			or.setRejReason(executionReport.getOrdRejReason().getValue());
+		}
+		orderService.setOrderResult(or);
+		autoTradeService.updatePosition(or);
 	}
 }

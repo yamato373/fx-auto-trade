@@ -1,8 +1,5 @@
 package jp.yamato373.domain.model.cache;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.springframework.stereotype.Component;
 
 import jp.yamato373.domain.model.Rate;
@@ -12,29 +9,24 @@ import jp.yamato373.uitl.FxEnums.Side;
 @Component
 public class RateCache {
 
-	Map<String, Rate> rateMap = new ConcurrentHashMap<>();
+	private Rate rate;
 
-	public void set(String symbol, Rate rate) {
-		rateMap.put(symbol, rate);
+	public void set(Rate rate) {
+		this.rate = rate;
 	}
 
-	public Rate get(String symbol) {
-		return rateMap.get(symbol);
+	public Rate get() {
+		return rate;
 	}
 
-	public void clear(String symbol) {
-		rateMap.remove(symbol);
+	public void clear() {
+		this.rate = null;
 	}
 
-	public void clearAll() {
-		rateMap.clear();
-	}
-
-	public Entry getEntry(String symbol, Side side) {
+	public Entry getEntry(Side side) {
 		if (Side.ASK.equals(side)) {
-			return rateMap.get(symbol).getAskEntry();
+			return rate.getAskEntry();
 		}
-		return rateMap.get(symbol).getBidEntry();
-
+		return rate.getBidEntry();
 	}
 }
