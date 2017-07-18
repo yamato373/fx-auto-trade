@@ -92,9 +92,11 @@ public class OrderApplication extends MessageCracker implements Application {
 		or.setStatus(status);
 		or.setOrderId(executionReport.getOrderID().getValue());
 		or.setExecId(executionReport.getExecID().getValue());
-		or.setLastQty(BigDecimal.valueOf(executionReport.getLastQty().getValue()));
-		or.setLastPx(BigDecimal.valueOf(executionReport.getLastPx().getValue()));
-		or.setExecTime(executionReport.getTransactTime().getValue());
+		if (Status.FILL.equals(status)){
+			or.setLastQty(BigDecimal.valueOf(executionReport.getLastQty().getValue()));
+			or.setLastPx(BigDecimal.valueOf(executionReport.getLastPx().getValue()));
+			or.setExecTime(executionReport.getTransactTime().getValue());
+		}
 		if (Status.REJECT.equals(status)){
 			or.setRejReason(executionReport.getOrdRejReason().getValue());
 		}
