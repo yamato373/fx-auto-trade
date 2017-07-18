@@ -34,4 +34,22 @@ public class OrderResultTable {
 	public List<OrderResult> findAll() {
 		return orderResultTable;
 	}
+
+	public void save(OrderResult orderResult) {
+		OrderResult or = findOne(orderResult.getClOrdId());
+		if (or == null){
+			insert(orderResult);
+		}else{
+			or.setExecId(orderResult.getExecId());
+			or.setExecTime(orderResult.getExecTime());
+			or.setLastPx(orderResult.getLastPx());
+			or.setLastQty(orderResult.getLastQty());
+			or.setOrderId(orderResult.getOrderId());
+			or.setRejReason(orderResult.getRejReason());
+		}
+	}
+
+	public OrderResult findByAskOrdId(String askClOrdId) {
+		return findAll().stream().filter(or -> or.getClOrdId().equals(askClOrdId)).findFirst().get();
+	}
 }

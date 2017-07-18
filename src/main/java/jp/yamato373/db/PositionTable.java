@@ -9,12 +9,14 @@ import java.util.NoSuchElementException;
 import org.springframework.stereotype.Component;
 
 import jp.yamato373.domain.model.entry.Position;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * TODO 暫定対応。DBに移植する。
  *
  */
 @Component
+@Slf4j
 public class PositionTable {
 
 	List<Position> positionTable = new ArrayList<>();
@@ -48,7 +50,7 @@ public class PositionTable {
 		positionTable.add(position);
 	}
 
-	public boolean removeByAskClOrdId(String askClOrdId){
+	public boolean deleteByAskClOrdId(String askClOrdId){
 		Position position;
 		try{
 			position =  positionTable.stream().filter(p -> askClOrdId.equals(p.getAskClOrdId())).findFirst().get();
@@ -58,7 +60,7 @@ public class PositionTable {
 		return positionTable.remove(position);
 	}
 
-	public boolean removeByBidClOrdId(String bidClOrdId) {
+	public boolean deleteByBidClOrdId(String bidClOrdId) {
 		Position position;
 		try{
 			position =  positionTable.stream().filter(p -> bidClOrdId.equals(p.getBidClOrdId())).findFirst().get();
@@ -68,6 +70,23 @@ public class PositionTable {
 		return positionTable.remove(position);
 	}
 
+	public Position save(Position p) {
+		Position position = findOne(p.getTrapPx());
+		if (position == null){
+			insert(p);
+			log.info("ポジションを追加をしました。position:" + findOne(p.getTrapPx()));
+		}else{
+			update(p);
+			log.info("ポジションを更新をしました。position:" + findOne(p.getTrapPx()));
+		}
+		return p;
+	}
 
+	public Position findByBidClOrdId(String clOrdId) {
+		return findAll().stream().filter(p -> clOrdId.equals(p.getBidClOrdId())).findFirst().get();
+	}
 
+	public Position findByAskClOrdId(String clOrdId) {
+		return findAll().stream().filter(p -> clOrdId.equals(p.getAskClOrdId())).findFirst().get();
+	}
 }

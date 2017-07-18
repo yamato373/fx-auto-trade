@@ -19,17 +19,7 @@ public class OrderResultRepository {
 	}
 
 	public void save(OrderResult orderResult) {
-		OrderResult or = orderResultTable.findOne(orderResult.getClOrdId());
-		if (or == null){
-			orderResultTable.insert(orderResult);
-		}else{
-			or.setExecId(orderResult.getExecId());
-			or.setExecTime(orderResult.getExecTime());
-			or.setLastPx(orderResult.getLastPx());
-			or.setLastQty(orderResult.getLastQty());
-			or.setOrderId(orderResult.getOrderId());
-			or.setRejReason(orderResult.getRejReason());
-		}
+		orderResultTable.save(orderResult);
 	}
 
 	public List<OrderResult> findAll() {
@@ -37,7 +27,7 @@ public class OrderResultRepository {
 	}
 
 	public OrderResult findByAskOrdId(String askClOrdId) {
-		return orderResultTable.findAll().stream().filter(or -> or.getClOrdId().equals(askClOrdId)).findFirst().get();
+		return orderResultTable.findByAskOrdId(askClOrdId);
 	}
 
 }
