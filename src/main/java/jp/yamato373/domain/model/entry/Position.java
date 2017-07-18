@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
 
 import lombok.AllArgsConstructor;
@@ -29,28 +28,23 @@ public class Position {
 	 */
 	@Column
 	@NotNull
-	// TODO 適当。調べる。@JoinColumn(name = "order_result_cl_ord_id")
 	String askClOrdId;
 
 	/**
 	 * 売り注文番号
 	 */
 	@Column
-	// TODO 適当。調べる。@JoinColumn(name = "order_result_cl_ord_id")
 	String bidClOrdId;
 
-	@OneToOne
-	// TODO 適当。調べる。@JoinColumn(name="order_result_cl_ord_id", referencedColumnName="cl_ord_id", insertable=false, updatable=false)
-	OrderResult askOrderResult;
+	/**
+	 * 買い注文中フラグ
+	 */
+	@Column
+	boolean buyingFlg;
 
-	@OneToOne
-	// TODO 適当。調べる。@JoinColumn(name="order_result_cl_ord_id", referencedColumnName="cl_ord_id", insertable=false, updatable=false)
-	OrderResult bidOrderResult;
-
-
-	public Position(BigDecimal trapPx, String askClOrdId, OrderResult orderResult) {
+	public Position(BigDecimal trapPx, String askClOrdId, boolean buyingFlg) {
 		this.trapPx = trapPx;
 		this.askClOrdId = askClOrdId;
-		this.askOrderResult = orderResult;
+		this.buyingFlg = buyingFlg;
 	}
 }

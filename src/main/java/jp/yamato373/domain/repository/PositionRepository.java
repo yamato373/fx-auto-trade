@@ -22,15 +22,13 @@ public class PositionRepository {
 		Position position = positionTable.findOne(p.getTrapPx());
 		if (position == null){
 			positionTable.insert(p);
-			log.info("ポジションを追加をしました。position" + p);
+			log.info("ポジションを追加をしました。position:" + positionTable.findOne(p.getTrapPx()));
+			return p;
 		}else{
-			position.setAskClOrdId(p.getAskClOrdId());
-			position.setBidClOrdId(p.getBidClOrdId());
-			position.setAskOrderResult(p.getAskOrderResult());
-			position.setBidOrderResult(p.getBidOrderResult());
-			log.info("ポジションを更新(bidClOrderId,BidOrderResult)をしました。position" + p);
+			positionTable.update(p);
+			log.info("ポジションを更新をしました。position:" + positionTable.findOne(p.getTrapPx()));
+			return p;
 		}
-		return position;
 	}
 
 	public List<Position> findAll(){
@@ -38,15 +36,19 @@ public class PositionRepository {
 	}
 
 	public Position findOne(BigDecimal trapPx) {
-		return positionTable.findOne(trapPx);
+		Position p = positionTable.findOne(trapPx);
+
+		if(p == null)log.error("BIF注文処理でポジションが無い。"); // TODO デバッグ用。消す。
+
+		return p;
 	}
 
 	public Position findByBidClOrdId(String clOrdId) {
-		return positionTable.findAll().stream().filter(p -> p.getBidClOrdId().equals(clOrdId)).findFirst().get();
+		return positionTable.findAll().stream().filter(p -> clOrdId.equals(p.getBidClOrdId())).findFirst().get();
 	}
 
 	public Position findByAskClOrdId(String clOrdId) {
-		return positionTable.findAll().stream().filter(p -> p.getAskClOrdId().equals(clOrdId)).findFirst().get();
+		return positionTable.findAll().stream().filter(p -> clOrdId.equals(p.getAskClOrdId())).findFirst().get();
 	}
 
 	public void deleteByAskClOrdId(String clOrdId){

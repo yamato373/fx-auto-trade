@@ -25,8 +25,9 @@ CREATE TABLE `order_result` (
 --
 CREATE TABLE `position` (
   `trap_px` DECIMAL(5,2) NOT NULL,
-  `ask_cl_ord_id` VARCHAR(10) DEFAULT NULL,
+  `ask_cl_ord_id` VARCHAR(10) NOT NULL,
   `bid_cl_ord_id` VARCHAR(10) DEFAULT NULL,
+  `buying_flg` BIT(1) NOT NULL,
   PRIMARY KEY (`trap_px`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

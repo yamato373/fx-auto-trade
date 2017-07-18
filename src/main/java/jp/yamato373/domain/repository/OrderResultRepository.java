@@ -36,4 +36,8 @@ public class OrderResultRepository {
 		return orderResultTable.findAll();
 	}
 
+	public OrderResult findByAskOrdId(String askClOrdId) {
+		return orderResultTable.findAll().stream().filter(or -> or.getClOrdId().equals(askClOrdId)).findFirst().get();
+	}
+
 }
