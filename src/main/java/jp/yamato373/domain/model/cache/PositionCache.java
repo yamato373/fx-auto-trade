@@ -2,6 +2,7 @@ package jp.yamato373.domain.model.cache;
 
 import java.math.BigDecimal;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,19 +34,10 @@ public class PositionCache {
 	}
 
 	public BigDecimal getFirst(){
-		if (positionMap.isEmpty()){
+		if (positionMap.isEmpty()) {
 			return null;
 		}
-		BigDecimal firstKey = null;
-		for (BigDecimal b : positionMap.keySet()) {
-			if (firstKey == null){
-				firstKey = b;
-			}
-			if (b.compareTo(firstKey) < 0){
-				firstKey = b;
-			}
-		}
-		return firstKey;
+		return positionMap.keySet().stream().sorted(Comparator.naturalOrder()).findFirst().get();
 	}
 
 	public void refresh(){

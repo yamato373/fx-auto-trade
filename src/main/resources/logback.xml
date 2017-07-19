@@ -1,23 +1,9 @@
 <configuration>
 
 	<property name="LOG_DIR" value="./log" />
-
-	<appender name="APP-FILE"
-		class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>${LOG_DIR}/app.log</file>
-		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<!-- daily rollover -->
-			<fileNamePattern>${LOG_DIR}/app.%d{yyyy-MM-dd}.log
-			</fileNamePattern>
-
-			<!-- keep 30 days' worth of history -->
-			<maxHistory>30</maxHistory>
-		</rollingPolicy>
-		<encoder>
-			<pattern>%date %level [%thread] %logger{10} [%file:%line] %msg%n
-			</pattern>
-		</encoder>
-	</appender>
+	<property name="PATTERN"
+		value="%date %level [%thread] %logger{10} [%file:%line] %msg%n" />
+	<property name="MAX_HISTORY" value="30" />
 
 	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
@@ -26,10 +12,148 @@
 		</encoder>
 	</appender>
 
-   	<logger name="jp.yamato373" level="DEBUG" />
+	<appender name="APP_FILE"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_DIR}/app.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_DIR}/app.%d{yyyy-MM-dd}.log
+			</fileNamePattern>
+			<maxHistory>${MAX_HISTORY}</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<pattern>${PATTERN}</pattern>
+		</encoder>
+	</appender>
 
-	<root level="INFO">
-		<appender-ref ref="APP-FILE" />
-		<appender-ref ref="CONSOLE" />
-	</root>
+	<appender name="PRICE_ASYNC_FIX_EVENT_FILE"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_DIR}/fix-price-event.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_DIR}/fix-price-event.%d{yyyy-MM-dd}.log
+			</fileNamePattern>
+			<maxHistory>${MAX_HISTORY}</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<pattern>${PATTERN}</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="PRICE_ASYNC_FIX_MESSAGE_FILE"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_DIR}/fix-price-message.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_DIR}/fix-price-message.%d{yyyy-MM-dd}.log
+			</fileNamePattern>
+			<maxHistory>${MAX_HISTORY}</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<pattern>${PATTERN}</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="ORDER_ASYNC_FIX_EVENT_FILE"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_DIR}/fix-order-event.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_DIR}/fix-order-event.%d{yyyy-MM-dd}.log
+			</fileNamePattern>
+			<maxHistory>${MAX_HISTORY}</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<pattern>${PATTERN}</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="ORDER_ASYNC_FIX_MESSAGE_FILE"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_DIR}/fix-order-message.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_DIR}/fix-order-message.%d{yyyy-MM-dd}.log
+			</fileNamePattern>
+			<maxHistory>${MAX_HISTORY}</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<pattern>${PATTERN}</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="APP" class="ch.qos.logback.classic.AsyncAppender">
+		<appender-ref ref="APP_FILE" />
+	</appender>
+
+	<appender name="PRICE_ASYNC_FIX_EVENT" class="ch.qos.logback.classic.AsyncAppender">
+		<appender-ref ref="PRICE_ASYNC_FIX_EVENT_FILE" />
+	</appender>
+
+	<appender name="PRICE_ASYNC_FIX_MESSAGE" class="ch.qos.logback.classic.AsyncAppender">
+		<appender-ref ref="PRICE_ASYNC_FIX_MESSAGE_FILE" />
+	</appender>
+
+	<logger name="quickfixj.event.price" class="ch.qos.logback.classic.AsyncAppender"
+		additivity="false">
+		<appender-ref ref="PRICE_ASYNC_FIX_EVENT" />
+	</logger>
+
+	<logger name="quickfixj.errorevent.price" class="ch.qos.logback.classic.AsyncAppender"
+		additivity="false">
+		<appender-ref ref="PRICE_ASYNC_FIX_EVENT" />
+	</logger>
+
+	<logger name="quickfixj.msg.incoming.price" class="ch.qos.logback.classic.AsyncAppender"
+		additivity="false">
+		<appender-ref ref="PRICE_ASYNC_FIX_MESSAGE" />
+	</logger>
+
+	<logger name="quickfixj.msg.outgoing.price" class="ch.qos.logback.classic.AsyncAppender"
+		additivity="false">
+		<appender-ref ref="PRICE_ASYNC_FIX_MESSAGE" />
+	</logger>
+
+	<appender name="ORDER_ASYNC_FIX_EVENT" class="ch.qos.logback.classic.AsyncAppender">
+		<appender-ref ref="ORDER_ASYNC_FIX_EVENT_FILE" />
+	</appender>
+
+	<appender name="ORDER_ASYNC_FIX_MESSAGE" class="ch.qos.logback.classic.AsyncAppender">
+		<appender-ref ref="ORDER_ASYNC_FIX_MESSAGE_FILE" />
+	</appender>
+
+	<logger name="quickfixj.event.order" class="ch.qos.logback.classic.AsyncAppender"
+		additivity="false">
+		<appender-ref ref="ORDER_ASYNC_FIX_EVENT" />
+	</logger>
+
+	<logger name="quickfixj.errorevent.order" class="ch.qos.logback.classic.AsyncAppender"
+		additivity="false">
+		<appender-ref ref="ORDER_ASYNC_FIX_EVENT" />
+	</logger>
+
+	<logger name="quickfixj.msg.incoming.order" class="ch.qos.logback.classic.AsyncAppender"
+		additivity="false">
+		<appender-ref ref="ORDER_ASYNC_FIX_MESSAGE" />
+	</logger>
+
+	<logger name="quickfixj.msg.outgoing.order" class="ch.qos.logback.classic.AsyncAppender"
+		additivity="false">
+		<appender-ref ref="ORDER_ASYNC_FIX_MESSAGE" />
+	</logger>
+
+	<springProfile name="hon">
+		<root level="info">
+			<appender-ref ref="APP" />
+		</root>
+	</springProfile>
+
+	<springProfile name="demo">
+		<root level="debug">
+			<appender-ref ref="APP" />
+		</root>
+	</springProfile>
+
+	<springProfile name="local">
+		<root level="debug">
+			<appender-ref ref="APP" />
+			<appender-ref ref="CONSOLE" />
+		</root>
+	</springProfile>
+
 </configuration>

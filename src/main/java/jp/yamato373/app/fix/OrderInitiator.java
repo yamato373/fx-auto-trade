@@ -33,7 +33,7 @@ public class OrderInitiator {
 
 	@Autowired
 	public OrderInitiator(OrderApplication orderApplication) throws ConfigError {
-		sessionSettings = new SessionSettings("./config/order.cfg");
+		sessionSettings = new SessionSettings("order.cfg");
 		this.orderApplication = orderApplication;
 	}
 
