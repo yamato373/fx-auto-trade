@@ -35,6 +35,6 @@ public class PositionRepository {
 	}
 
 	public void deleteByBidClOrdId(String clOrdId){
-		boolean result = positionTable.deleteByBidClOrdId(clOrdId);
+		 positionTable.deleteByBidClOrdId(clOrdId);
 	}
 }

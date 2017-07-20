@@ -14,7 +14,7 @@ import quickfix.Initiator;
 import quickfix.LogFactory;
 import quickfix.MessageFactory;
 import quickfix.MessageStoreFactory;
-import quickfix.ScreenLogFactory;
+import quickfix.SLF4JLogFactory;
 import quickfix.Session;
 import quickfix.SessionID;
 import quickfix.SessionSettings;
@@ -41,7 +41,7 @@ public class OrderInitiator {
 	public void init() {
 		try {
 			MessageStoreFactory messageStoreFactory = new FileStoreFactory(sessionSettings);
-			LogFactory logFactory = new ScreenLogFactory(true, true, true);
+			LogFactory logFactory = new SLF4JLogFactory(sessionSettings);
 			MessageFactory messageFactory = new DefaultMessageFactory();
 
 			initiator = new SocketInitiator(orderApplication, messageStoreFactory, sessionSettings, logFactory,

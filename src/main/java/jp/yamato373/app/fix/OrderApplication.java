@@ -22,6 +22,7 @@ import quickfix.RejectLogon;
 import quickfix.SessionID;
 import quickfix.UnsupportedMessageType;
 import quickfix.field.MsgType;
+import quickfix.field.OrdRejReason;
 import quickfix.field.Password;
 import quickfix.fix44.MessageCracker;
 
@@ -97,7 +98,7 @@ public class OrderApplication extends MessageCracker implements Application {
 			or.setLastPx(BigDecimal.valueOf(executionReport.getLastPx().getValue()));
 			or.setExecTime(executionReport.getTransactTime().getValue());
 		}
-		if (Status.REJECT.equals(status)){
+		if (executionReport.isSetField(OrdRejReason.FIELD)){
 			or.setRejReason(executionReport.getOrdRejReason().getValue());
 		}
 		orderService.setOrderResult(or);

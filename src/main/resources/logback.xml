@@ -1,8 +1,8 @@
 <configuration>
 
 	<property name="LOG_DIR" value="./log" />
-	<property name="PATTERN"
-		value="%date %level [%thread] %logger{10} [%file:%line] %msg%n" />
+	<property name="PATTERN" value="%date %level [%thread] %logger{10} %msg%n" />
+	<property name="FIX_MSG_PATTERN" value="%date %msg%n" />
 	<property name="MAX_HISTORY" value="30" />
 
 	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
@@ -47,7 +47,7 @@
 			<maxHistory>${MAX_HISTORY}</maxHistory>
 		</rollingPolicy>
 		<encoder>
-			<pattern>${PATTERN}</pattern>
+			<pattern>${FIX_MSG_PATTERN}</pattern>
 		</encoder>
 	</appender>
 
@@ -73,7 +73,7 @@
 			<maxHistory>${MAX_HISTORY}</maxHistory>
 		</rollingPolicy>
 		<encoder>
-			<pattern>${PATTERN}</pattern>
+			<pattern>${FIX_MSG_PATTERN}</pattern>
 		</encoder>
 	</appender>
 
@@ -144,13 +144,15 @@
 	</springProfile>
 
 	<springProfile name="demo">
-		<root level="debug">
+		<logger name="jp.yamato373" level="debug" />
+		<root level="info">
 			<appender-ref ref="APP" />
 		</root>
 	</springProfile>
 
 	<springProfile name="local">
-		<root level="debug">
+		<logger name="jp.yamato373" level="debug" />
+		<root level="info">
 			<appender-ref ref="APP" />
 			<appender-ref ref="CONSOLE" />
 		</root>
