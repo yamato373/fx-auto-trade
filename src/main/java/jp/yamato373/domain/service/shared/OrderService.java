@@ -42,7 +42,7 @@ public class OrderService {
 	 * @return
 	 */
 	public OrderResult order(Side side, BigDecimal amt) {
-		BigDecimal px = rateCache.getEntry(side).getPx();
+		BigDecimal px = rateCache.getEntry(Side.ASK.equals(side) ? Side.BID : Side.ASK).getPx();
 		OrderResult or = new OrderResult(generatClOrdId(), Status.ORDER, appSettings.getSymbol(), side, new Date(), amt, px);
 		return order(or);
 	}

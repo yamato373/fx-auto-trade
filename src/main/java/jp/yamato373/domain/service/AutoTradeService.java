@@ -75,14 +75,14 @@ public class AutoTradeService {
 
 					Position p = positionRepository.findByAskClOrdId(position.getAskClOrdId());
 					OrderResult or = orderService.order(
-							Side.BID,
+							Side.ASK,
 							orderResultRepository.findByAskOrdId(p.getAskClOrdId()).getLastQty());
 
 					p.setBidClOrdId(or.getClOrdId());
 					positionRepository.save(p);
 
 					changePositionFlg = true;
-					log.info("AutoTradeでポジションのBID注文送信 OrderResult:" + or + "、Position:" + p);
+					log.info("AutoTradeでポジションのASK注文送信 OrderResult:" + or + "、Position:" + p);
 				}
 			}
 			if (changePositionFlg){
@@ -104,10 +104,10 @@ public class AutoTradeService {
 
 			// ポジションを持っていなかったら買う
 			if (positionCache.notContains(trapPx)) {
-				OrderResult or = orderService.order(Side.ASK, tradeSettings.getOrderAmount());
+				OrderResult or = orderService.order(Side.BID, tradeSettings.getOrderAmount());
 				Position p = positionRepository.save(new Position(trapPx, or.getClOrdId(), true));
 
-				log.info("AutoTradeでASK注文送信。OrderResult:" + or + "、Position:" + p);
+				log.info("AutoTradeでBID注文送信。OrderResult:" + or + "、Position:" + p);
 
 				// 遡って注文できるポジションがあれば注文する
 				BigDecimal firstPx = positionCache.getFirst();
@@ -117,7 +117,7 @@ public class AutoTradeService {
 					for (BigDecimal tp = trapPx.add(tradeSettings.getTrapRange()); tp.compareTo(firstPx) < 0
 							; tp = tp.add(tradeSettings.getTrapRange())) {
 
-						or = orderService.order(Side.ASK, tradeSettings.getOrderAmount());
+						or = orderService.order(Side.BID, tradeSettings.getOrderAmount());
 						p = positionRepository.save(new Position(tp, or.getClOrdId(), true));
 
 						log.info("AutoTradeでポジションを遡ってASK注文。OrderResult:" + or + "、Position:" + p);
@@ -136,19 +136,19 @@ public class AutoTradeService {
 	public void updatePosition(OrderResult orderResult) {
 
 		if (!Status.FILL.equals(orderResult.getStatus())) {
-			if (Side.BID.equals(orderResult.getSide())) {
+			if (Side.ASK.equals(orderResult.getSide())) {
 				Position p = positionRepository.findByBidClOrdId(orderResult.getClOrdId());
 				p.setBidClOrdId(null);
 				positionRepository.save(p);
 
-			} else if (Side.ASK.equals(orderResult.getSide())) {
+			} else if (Side.BID.equals(orderResult.getSide())) {
 				positionRepository.deleteByAskClOrdId(orderResult.getClOrdId());
 
 			}
-		} else if (Side.BID.equals(orderResult.getSide())) {
+		} else if (Side.ASK.equals(orderResult.getSide())) {
 			positionRepository.deleteByBidClOrdId(orderResult.getClOrdId());
 
-		} else if (Side.ASK.equals(orderResult.getSide())){
+		} else if (Side.BID.equals(orderResult.getSide())){
 			Position p = positionRepository.findByAskClOrdId(orderResult.getClOrdId());
 			p.setBuyingFlg(false);
 			positionRepository.save(p);

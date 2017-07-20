@@ -7,7 +7,8 @@ public class FxEnums {
 
 		ORDER(0, "注文中", '0'),
 		FILL(1, "約定", '2'),
-		REJECT(2, "リジェクト", '8')
+		CANCEL(2, "キャンセル", '4'),
+		REJECT(3, "リジェクト", '8')
 	    ;
 
 		private final int code;
@@ -55,8 +56,8 @@ public class FxEnums {
 
 	public static enum Side{
 
-		BID(0, "売り", '1'),
-		ASK(1, "買い", '2'),
+		BID(0, "買い", '1'),
+		ASK(1, "売り", '2'),
 	    ;
 
 		private final int code;
