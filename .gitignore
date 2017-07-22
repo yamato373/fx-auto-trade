@@ -5,3 +5,6 @@
 target/*
 fix/*
 log/*
+config/application_*.yml
+config/order_*.cfg
+config/price_*.cfg

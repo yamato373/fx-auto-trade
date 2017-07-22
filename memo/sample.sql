@@ -31,6 +31,15 @@ CREATE TABLE `position` (
   PRIMARY KEY (`trap_px`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+CREATE TABLE `position_history` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `trap_px` DECIMAL(5,2) NOT NULL,
+  `ask_cl_ord_id` VARCHAR(10) NOT NULL,
+  `bid_cl_ord_id` VARCHAR(10) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 -- 付けない
 ALTER TABLE position ADD FOREIGN KEY(ask_cl_ord_id) REFERENCES order_result(cl_ord_id);
 ALTER TABLE position ADD FOREIGN KEY(bid_cl_ord_id) REFERENCES order_result(cl_ord_id);

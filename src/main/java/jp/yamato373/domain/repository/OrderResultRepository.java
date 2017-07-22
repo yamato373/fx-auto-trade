@@ -25,9 +25,4 @@ public class OrderResultRepository {
 	public List<OrderResult> findAll() {
 		return orderResultTable.findAll();
 	}
-
-	public OrderResult findByAskOrdId(String askClOrdId) {
-		return orderResultTable.findByAskOrdId(askClOrdId);
-	}
-
 }

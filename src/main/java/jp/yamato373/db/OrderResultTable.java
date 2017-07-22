@@ -48,8 +48,4 @@ public class OrderResultTable {
 			or.setRejReason(orderResult.getRejReason());
 		}
 	}
-
-	public OrderResult findByAskOrdId(String askClOrdId) {
-		return findAll().stream().filter(or -> or.getClOrdId().equals(askClOrdId)).findFirst().get();
-	}
 }

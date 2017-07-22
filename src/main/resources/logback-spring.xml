@@ -29,7 +29,7 @@
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>${LOG_DIR}/fix-price-event.log</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>${LOG_DIR}/fix-price-event.%d{yyyy-MM-dd}.log
+			<fileNamePattern>${LOG_DIR}/price-event.%d{yyyy-MM-dd}.log
 			</fileNamePattern>
 			<maxHistory>${MAX_HISTORY}</maxHistory>
 		</rollingPolicy>
@@ -42,7 +42,7 @@
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>${LOG_DIR}/fix-price-message.log</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>${LOG_DIR}/fix-price-message.%d{yyyy-MM-dd}.log
+			<fileNamePattern>${LOG_DIR}/price-message.%d{yyyy-MM-dd}.log
 			</fileNamePattern>
 			<maxHistory>${MAX_HISTORY}</maxHistory>
 		</rollingPolicy>
@@ -55,7 +55,7 @@
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>${LOG_DIR}/fix-order-event.log</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>${LOG_DIR}/fix-order-event.%d{yyyy-MM-dd}.log
+			<fileNamePattern>${LOG_DIR}/order-event.%d{yyyy-MM-dd}.log
 			</fileNamePattern>
 			<maxHistory>${MAX_HISTORY}</maxHistory>
 		</rollingPolicy>
@@ -68,7 +68,7 @@
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>${LOG_DIR}/fix-order-message.log</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>${LOG_DIR}/fix-order-message.%d{yyyy-MM-dd}.log
+			<fileNamePattern>${LOG_DIR}/order-message.%d{yyyy-MM-dd}.log
 			</fileNamePattern>
 			<maxHistory>${MAX_HISTORY}</maxHistory>
 		</rollingPolicy>
