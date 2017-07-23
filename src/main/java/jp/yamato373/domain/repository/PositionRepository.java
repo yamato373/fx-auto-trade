@@ -1,40 +1,20 @@
 package jp.yamato373.domain.repository;
 
-import java.util.List;
+import java.math.BigDecimal;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import jp.yamato373.db.PositionTable;
 import jp.yamato373.domain.model.entry.Position;
 
 @Repository
-public class PositionRepository {
+public interface PositionRepository extends JpaRepository<Position, BigDecimal> {
 
-	@Autowired
-	PositionTable positionTable;
+	@Query("SELECT MIN(p.trapPx) FROM Position p")
+	BigDecimal findMinFirstPx();
 
-	public Position save(Position p) {
-		return positionTable.save(p);
-	}
+	Position findByAskClOrdId(Integer clOrdId);
 
-	public List<Position> findAll(){
-		return positionTable.findAll();
-	}
-
-	public Position findByBidClOrdId(String clOrdId) {
-		return positionTable.findByBidClOrdId(clOrdId);
-	}
-
-	public Position findByAskClOrdId(String clOrdId) {
-		return positionTable.findByAskClOrdId(clOrdId);
-	}
-
-	public void deleteByAskClOrdId(String clOrdId){
-		positionTable.deleteByAskClOrdId(clOrdId);
-	}
-
-	public void deleteByBidClOrdId(String clOrdId){
-		 positionTable.deleteByBidClOrdId(clOrdId);
-	}
+	Position findByBidClOrdId(Integer clOrdId);
 }

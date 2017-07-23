@@ -28,23 +28,17 @@ public class Position {
 	 */
 	@Column
 	@NotNull
-	String askClOrdId;
+	Integer askClOrdId;
 
 	/**
 	 * 売り注文番号
 	 */
 	@Column
-	String bidClOrdId;
+	Integer bidClOrdId;
 
 	/**
 	 * 買い注文中フラグ
 	 */
 	@Column
 	boolean buyingFlg;
-
-	public Position(BigDecimal trapPx, String askClOrdId, boolean buyingFlg) {
-		this.trapPx = trapPx;
-		this.askClOrdId = askClOrdId;
-		this.buyingFlg = buyingFlg;
-	}
 }

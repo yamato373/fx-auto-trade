@@ -6,7 +6,7 @@ USE autotrade;
 
 --
 CREATE TABLE `order_result` (
-  `cl_ord_id` VARCHAR(10) NOT NULL,
+  `cl_ord_id` INT NOT NULL AUTO_INCREMENT,
   `status` VARCHAR(6) NOT NULL,
   `symbol` VARCHAR(7) NOT NULL,
   `side` VARCHAR(3) NOT NULL,
@@ -25,8 +25,8 @@ CREATE TABLE `order_result` (
 --
 CREATE TABLE `position` (
   `trap_px` DECIMAL(5,2) NOT NULL,
-  `ask_cl_ord_id` VARCHAR(10) NOT NULL,
-  `bid_cl_ord_id` VARCHAR(10) DEFAULT NULL,
+  `ask_cl_ord_id` INT NOT NULL,
+  `bid_cl_ord_id` INT DEFAULT NULL,
   `buying_flg` BIT(1) NOT NULL,
   PRIMARY KEY (`trap_px`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -35,17 +35,18 @@ CREATE TABLE `position` (
 CREATE TABLE `position_history` (
   `id` BIGINT NOT NULL AUTO_INCREMENT,
   `trap_px` DECIMAL(5,2) NOT NULL,
-  `ask_cl_ord_id` VARCHAR(10) NOT NULL,
-  `bid_cl_ord_id` VARCHAR(10) DEFAULT NULL,
+  `ask_cl_ord_id` INT NOT NULL,
+  `bid_cl_ord_id` INT DEFAULT NULL,
+  `settl_time` DATETIME NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- 付けない
-ALTER TABLE position ADD FOREIGN KEY(ask_cl_ord_id) REFERENCES order_result(cl_ord_id);
-ALTER TABLE position ADD FOREIGN KEY(bid_cl_ord_id) REFERENCES order_result(cl_ord_id);
-
 --
-DELETE FROM autotrade.order_result;
+DELETE FROM order_result;
+DELETE FROM position;
+DELETE FROM position_history;
 
 --
 DROP TABLE order_result;
+DROP TABLE position;
+DROP TABLE position_history;

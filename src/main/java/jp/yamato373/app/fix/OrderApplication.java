@@ -87,7 +87,7 @@ public class OrderApplication extends MessageCracker implements Application {
 			throws FieldNotFound, UnsupportedMessageType, IncorrectTagValue {
 		log.info("オーダー結果受信。ExecutionReport:"+ executionReport);
 
-		OrderResult or = orderService.getOrderResult(executionReport.getClOrdID().getValue());
+		OrderResult or = orderService.getOrderResult(Integer.valueOf(executionReport.getClOrdID().getValue()));
 
 		Status status = FxEnums.getStatus(executionReport.getOrdStatus().getValue());
 		or.setStatus(status);

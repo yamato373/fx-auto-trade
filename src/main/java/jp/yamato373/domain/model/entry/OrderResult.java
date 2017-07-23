@@ -5,6 +5,8 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -26,7 +28,8 @@ public class OrderResult {
 	 * クライアント注文ID
 	 */
 	@Id
-	String clOrdId;
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	Integer clOrdId;
 
 	/**
 	 * ステータス
@@ -108,8 +111,7 @@ public class OrderResult {
 	@Column
 	Integer rejReason;
 
-	public OrderResult(String clOrdId, Status status, String symbol, Side side, Date orderTime, BigDecimal orderQty, BigDecimal price) {
-		this.clOrdId = clOrdId;
+	public OrderResult(Status status, String symbol, Side side, Date orderTime, BigDecimal orderQty, BigDecimal price) {
 		this.status = status;
 		this.symbol = symbol;
 		this.side = side;

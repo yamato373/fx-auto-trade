@@ -7,17 +7,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import jp.yamato373.domain.model.Rate;
-import jp.yamato373.domain.model.cache.PositionCache;
 import jp.yamato373.domain.model.entry.OrderResult;
 import jp.yamato373.domain.model.entry.Position;
 import jp.yamato373.domain.model.entry.PositionHistory;
-import jp.yamato373.domain.repository.OrderResultRepository;
 import jp.yamato373.domain.repository.PositionHistoryRepository;
 import jp.yamato373.domain.repository.PositionRepository;
 import jp.yamato373.domain.service.shared.OrderService;
@@ -50,20 +46,7 @@ public class AutoTradeService {
 	PositionHistoryRepository positionHistoryRepository;
 
 	@Autowired
-	OrderResultRepository orderResultRepository;
-
-	@Autowired
-	PositionCache positionCache;
-
-	@Autowired
 	OrderService orderService;
-
-	int id = 0; // TODO 暫定
-
-	@PostConstruct
-	public void start(){
-		positionCache.refresh();
-	}
 
 	/**
 	 * オーダー要かチェックしオーダーする
@@ -76,28 +59,21 @@ public class AutoTradeService {
 			log.info("Indicativeの為、売り対象ではありません。indicative:" + rate.getBidEntry().isIndicative()
 					+ "、amt:" + rate.getBidEntry().getAmt());
 		} else {
-
-			boolean changePositionFlg = false;
-			for (Position position : positionCache.getPositionSet()) {
+			for (Position position : positionRepository.findAll()) {
 				// ポジション+トラップ値幅がレートの売り価格以下だった場合、かつ注文中じゃない場合
 				if (!position.isBuyingFlg() && Objects.isNull(position.getBidClOrdId())
 						&& position.getTrapPx().add(tradeSettings.getTrapRange()).compareTo(rate.getBidEntry().getPx()) <= 0) {
 
-					Position p = positionRepository.findByAskClOrdId(position.getAskClOrdId());
 					OrderResult or = orderService.order(
 							Side.ASK,
-							orderResultRepository.findOne(p.getAskClOrdId()).getLastQty(),
-							p.getTrapPx().add(tradeSettings.getTrapRange()));
+							orderService.getBidAmt(position),
+							position.getTrapPx().add(tradeSettings.getTrapRange()));
 
-					p.setBidClOrdId(or.getClOrdId());
-					positionRepository.save(p);
+					position.setBidClOrdId(or.getClOrdId());
+					positionRepository.save(position);
 
-					changePositionFlg = true;
-					log.info("AutoTradeでポジションのASK注文送信 OrderResult:" + or + "、Position:" + p);
+					log.info("AutoTradeでポジションのASK注文送信 OrderResult:" + or + "、Position:" + position);
 				}
-			}
-			if (changePositionFlg){
-				positionCache.refresh();
 			}
 		}
 
@@ -117,27 +93,26 @@ public class AutoTradeService {
 			log.debug("トラップ価格計算。" + rate.getAskEntry().getPx().toString() + "→" + trapPx.toString());
 
 			// ポジションを持っていなかったら買う
-			if (positionCache.notContains(trapPx)) {
-				OrderResult or = orderService.order(Side.BID, tradeSettings.getOrderAmount(), trapPx);
-				Position p = positionRepository.save(new Position(trapPx, or.getClOrdId(), true));
-
-				log.info("AutoTradeでBID注文送信。OrderResult:" + or + "、Position:" + p);
+			if (!positionRepository.exists(trapPx)) {
 
 				// 遡って注文できるポジションがあれば注文する
-				BigDecimal firstPx = positionCache.getFirst();
+				BigDecimal firstPx = positionRepository.findMinFirstPx();
 				log.debug("保持しているポジションで一番小さい値:" + firstPx);
-
 				if (firstPx != null) {
 					for (BigDecimal tp = trapPx.add(tradeSettings.getTrapRange()); tp.compareTo(firstPx) < 0
 							; tp = tp.add(tradeSettings.getTrapRange())) {
 
-						or = orderService.order(Side.BID, tradeSettings.getOrderAmount(), trapPx);
-						p = positionRepository.save(new Position(tp, or.getClOrdId(), true));
+						OrderResult or = orderService.order(Side.BID, tradeSettings.getOrderAmount(), trapPx);
+						Position p = positionRepository.save(new Position(tp, or.getClOrdId(), null, true));
 
 						log.info("AutoTradeでポジションを遡ってASK注文。OrderResult:" + or + "、Position:" + p);
 					}
 				}
-				positionCache.refresh();
+				// 現在の価格のポジションを注文する
+				OrderResult or = orderService.order(Side.BID, tradeSettings.getOrderAmount(), trapPx);
+				Position p = positionRepository.save(new Position(trapPx, or.getClOrdId(), null, true));
+
+				log.info("AutoTradeでBID注文送信。OrderResult:" + or + "、Position:" + p);
 			}
 		}
 	}
@@ -154,23 +129,19 @@ public class AutoTradeService {
 				Position p = positionRepository.findByBidClOrdId(orderResult.getClOrdId());
 				p.setBidClOrdId(null);
 				positionRepository.save(p);
-
 			} else if (Side.BID.equals(orderResult.getSide())) {
-				positionRepository.deleteByAskClOrdId(orderResult.getClOrdId());
-
+				positionRepository.delete(positionRepository.findByAskClOrdId(orderResult.getClOrdId()));
 			}
 		} else if (Side.ASK.equals(orderResult.getSide())) {
 			Position p = positionRepository.findByBidClOrdId(orderResult.getClOrdId());
-			PositionHistory ph = new PositionHistory(id++, p.getTrapPx(), p.getAskClOrdId(), p.getBidClOrdId()); // TODO 暫定
+			PositionHistory ph = new PositionHistory(null, p.getTrapPx(), p.getAskClOrdId(), p.getBidClOrdId(), new Date());
 			positionHistoryRepository.save(ph);
-			positionRepository.deleteByBidClOrdId(orderResult.getClOrdId());
-
+			positionRepository.delete(p);
 		} else if (Side.BID.equals(orderResult.getSide())){
 			Position p = positionRepository.findByAskClOrdId(orderResult.getClOrdId());
 			p.setBuyingFlg(false);
 			positionRepository.save(p);
 		}
-		positionCache.refresh();
 	}
 
 	/**
@@ -199,11 +170,11 @@ public class AutoTradeService {
 	 *
 	 * @return Collection<ProfitReport>
 	 */
-	public Collection<ProfitReport> profitReport() {
+	public Collection<ProfitReport> getProfitReport() {
 		List<ProfitReport> list = new ArrayList<>();
 		for (PositionHistory ph : getAllPositionHistory()){
-			OrderResult askOr = orderResultRepository.findOne(ph.getAskClOrdId());
-			OrderResult bidOr = orderResultRepository.findOne(ph.getBidClOrdId());
+			OrderResult askOr = orderService.getOrderResult(ph.getAskClOrdId());
+			OrderResult bidOr = orderService.getOrderResult(ph.getBidClOrdId());
 			BigDecimal profit = bidOr.getLastPx().multiply(bidOr.getLastQty()).subtract(askOr.getLastPx().multiply(askOr.getLastQty()));
 			list.add(new ProfitReport(
 							ph.getId(),
@@ -217,6 +188,37 @@ public class AutoTradeService {
 							bidOr.getLastQty()));
 		}
 		return list;
+	}
+
+	/**
+	 * 全体の利益を計算
+	 *
+	 * @return 利益
+	 */
+	public BigDecimal getProfitAll() {
+		BigDecimal proft = new BigDecimal(0);
+		for(ProfitReport pr : getProfitReport()){
+			proft = proft.add(pr.利益);
+		}
+		return proft;
+	}
+
+	/**
+	 * 日付を指定して利益を計算
+	 *
+	 * @param from
+	 * @param to
+	 * @return 利益
+	 */
+	public BigDecimal getProfitByDate(Date from, Date to) {
+		List<PositionHistory> list = positionHistoryRepository.findBySettlTime(from, to);
+		BigDecimal proft = new BigDecimal(0);
+		for (PositionHistory ph : list){
+			OrderResult askOr = orderService.getOrderResult(ph.getAskClOrdId());
+			OrderResult bidOr = orderService.getOrderResult(ph.getBidClOrdId());
+			proft = proft.add(bidOr.getLastPx().multiply(bidOr.getLastQty()).subtract(askOr.getLastPx().multiply(askOr.getLastQty())));
+		}
+		return proft;
 	}
 
 	private boolean bidEntryIndicativeCheck(Rate rate) {

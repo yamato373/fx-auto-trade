@@ -65,7 +65,7 @@ public class OrderSender {
 	 */
 	public void sendNewOrderSingle(OrderResult orderResult) {
 		NewOrderSingle newOrderSingle = new NewOrderSingle(
-				new ClOrdID(orderResult.getClOrdId()),
+				new ClOrdID(orderResult.getClOrdId().toString()),
 				new Side(orderResult.getSide().getFieldCode()),
 				new TransactTime(orderResult.getOrderTime()),
 				new OrdType(OrdType.LIMIT));

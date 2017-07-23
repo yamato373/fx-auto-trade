@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import jp.yamato373.domain.model.cache.RateCache;
 import jp.yamato373.domain.model.entry.OrderResult;
+import jp.yamato373.domain.model.entry.Position;
 import jp.yamato373.domain.model.fix.OrderSender;
 import jp.yamato373.domain.repository.OrderResultRepository;
 import jp.yamato373.uitl.AppSettings;
@@ -32,8 +33,6 @@ public class OrderService {
 	@Autowired
 	AppSettings appSettings;
 
-	private int clOrdIdCounterr = 0;
-
 	/**
 	 * 最新のプライスでオーダーする
 	 *
@@ -43,7 +42,7 @@ public class OrderService {
 	 */
 	public OrderResult order(Side side, BigDecimal amt) {
 		BigDecimal px = rateCache.getEntry(Side.ASK.equals(side) ? Side.BID : Side.ASK).getPx();
-		OrderResult or = new OrderResult(generatClOrdId(), Status.ORDER, appSettings.getSymbol(), side, new Date(), amt, px);
+		OrderResult or = new OrderResult(Status.ORDER, appSettings.getSymbol(), side, new Date(), amt, px);
 		return order(or);
 	}
 
@@ -56,7 +55,7 @@ public class OrderService {
 	 * @return
 	 */
 	public OrderResult order(Side side, BigDecimal amt, BigDecimal price) {
-		OrderResult or = new OrderResult(generatClOrdId(), Status.ORDER, appSettings.getSymbol(), side, new Date(), amt, price);
+		OrderResult or = new OrderResult(Status.ORDER, appSettings.getSymbol(), side, new Date(), amt, price);
 		return order(or);
 	}
 
@@ -66,7 +65,7 @@ public class OrderService {
 	 * @param ClOrdId
 	 * @return
 	 */
-	public OrderResult getOrderResult(String clOrdId) {
+	public OrderResult getOrderResult(Integer clOrdId) {
 		return orderResultRepository.findOne(clOrdId);
 	}
 
@@ -78,6 +77,16 @@ public class OrderService {
 	public void setOrderResult(OrderResult or) {
 		orderResultRepository.save(or);
 		log.info("注文結果格納" + or);
+	}
+
+	/**
+	 *
+	 * ポジションを取得したときのアマウントを取得
+	 * @param position
+	 * @return amt
+	 */
+	public BigDecimal getBidAmt(Position position) {
+		return orderResultRepository.findOne(position.getAskClOrdId()).getLastQty();
 	}
 
 	/**
@@ -93,9 +102,5 @@ public class OrderService {
 		orderResultRepository.save(or);
 		orderSender.sendNewOrderSingle(or);
 		return or;
-	}
-
-	private String generatClOrdId() {
-		return Integer.toString(clOrdIdCounterr++); // TODO 永続的なシーケンスにする
 	}
 }
