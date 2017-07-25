@@ -11,15 +11,15 @@ public class RateCache {
 
 	private Rate rate;
 
-	public void set(Rate rate) {
+	public void setRate(Rate rate) {
 		this.rate = rate;
 	}
 
-	public Rate get() {
+	public Rate getRate() {
 		return rate;
 	}
 
-	public void clear() {
+	public void clearRate() {
 		this.rate = null;
 	}
 

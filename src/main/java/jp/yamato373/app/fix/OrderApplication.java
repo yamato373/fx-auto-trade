@@ -80,6 +80,11 @@ public class OrderApplication extends MessageCracker implements Application {
 	@Override
 	public void fromApp(quickfix.Message message, SessionID sessionID)
 			throws FieldNotFound, IncorrectDataFormat, IncorrectTagValue, UnsupportedMessageType {
+
+		if (MsgType.NEWS.equals(message.getHeader().getString(MsgType.FIELD))){
+			log.info("Newsは無視します。message:"+ message);
+			return;
+		}
 		crack(message, sessionID);
 	}
 

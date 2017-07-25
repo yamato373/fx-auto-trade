@@ -126,21 +126,32 @@ public class AutoTradeService {
 
 		if (!Status.FILL.equals(orderResult.getStatus())) {
 			if (Side.ASK.equals(orderResult.getSide())) {
+				log.info("AutoTradeでASK注文失敗。OrderResult:" + orderResult);
 				Position p = positionRepository.findByBidClOrdId(orderResult.getClOrdId());
 				p.setBidClOrdId(null);
 				positionRepository.save(p);
+				log.info("ポジションを更新しました。p:" + p);
+
 			} else if (Side.BID.equals(orderResult.getSide())) {
+				log.info("AutoTradeでBID注文失敗。OrderResult:" + orderResult);
 				positionRepository.delete(positionRepository.findByAskClOrdId(orderResult.getClOrdId()));
+				log.info("ポジションを削除しました。");
 			}
 		} else if (Side.ASK.equals(orderResult.getSide())) {
+			log.info("AutoTradeでASK注文成功。OrderResult:" + orderResult);
 			Position p = positionRepository.findByBidClOrdId(orderResult.getClOrdId());
 			PositionHistory ph = new PositionHistory(null, p.getTrapPx(), p.getAskClOrdId(), p.getBidClOrdId(), new Date());
 			positionHistoryRepository.save(ph);
+			log.info("ポジション履歴に追加しました。p:" + ph);
 			positionRepository.delete(p);
+			log.info("ポジションを削除しました。p:" + p);
+
 		} else if (Side.BID.equals(orderResult.getSide())){
+			log.info("AutoTradeでBID注文成功。OrderResult:" + orderResult);
 			Position p = positionRepository.findByAskClOrdId(orderResult.getClOrdId());
 			p.setBuyingFlg(false);
 			positionRepository.save(p);
+			log.info("ポジションを更新しました。p:" + p);
 		}
 	}
 

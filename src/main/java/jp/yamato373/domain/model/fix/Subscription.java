@@ -68,7 +68,7 @@ public class Subscription {
 
 		service.scheduleWithFixedDelay(() -> {
 
-			log.info("Subscriptionチェックタスクを実行。");
+			log.debug("Subscriptionチェックタスクを実行。");
 
 			// 初回subscribe
 			if (firstFlg) {

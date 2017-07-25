@@ -13,14 +13,14 @@ public class RateService {
 	RateCache rateCache;
 
 	public void setRate(Rate rate) {
-		rateCache.set(rate);
+		rateCache.setRate(rate);
 	}
 
 	public Rate getRate() {
-		return rateCache.get();
+		return rateCache.getRate();
 	}
 
 	public void clearRate() {
-		rateCache.clear();
+		rateCache.clearRate();
 	}
 }

@@ -88,16 +88,27 @@ public class PriceApplication extends MessageCracker implements Application {
 		if (MsgType.MARKET_DATA_SNAPSHOT_FULL_REFRESH.equals(message.getHeader().getString(MsgType.FIELD))
 				|| MsgType.MARKET_DATA_INCREMENTAL_REFRESH.equals(message.getHeader().getString(MsgType.FIELD))) {
 
-			// リクエストIDがないのにプライスが来た場合
+			// リクエストIDがないのにプライスが来た場合は無視
 			if (StringUtils.isEmpty(fixService.getMDReqID())){
+				log.warn("リクエストIDを保持していないのにプライスを受信しました。message:" + message);
 				return;
 			}
 			crack(message, sessionID);
+		}
+		if (MsgType.NEWS.equals(message.getHeader().getString(MsgType.FIELD))){
+			log.info("Newsは無視します。message:"+ message);
+			return;
 		}
 	}
 
 	public void onMessage(quickfix.fix44.MarketDataSnapshotFullRefresh snapshot, SessionID sessionID)
 			throws FieldNotFound, UnsupportedMessageType, IncorrectTagValue {
+
+		if (!fixService.getMDReqID().equals(snapshot.getMDReqID().getValue())){
+			log.warn("管理していないリクエストIDのプライスを受信しました。保持reqID:" + fixService.getMDReqID()
+				+ "、受信reqID" + snapshot.getMDReqID());
+			return;
+		}
 
 		String symbol = snapshot.getSymbol().getValue();
 
@@ -124,6 +135,12 @@ public class PriceApplication extends MessageCracker implements Application {
 
 	public void onMessage(quickfix.fix44.MarketDataIncrementalRefresh incremental, SessionID sessionID)
 			throws FieldNotFound, UnsupportedMessageType, IncorrectTagValue {
+
+		if (!fixService.getMDReqID().equals(incremental.getMDReqID().getValue())){
+			log.warn("管理していないリクエストIDのプライスを受信しました。保持reqID:" + fixService.getMDReqID()
+				+ "、受信reqID" + incremental.getMDReqID());
+			return;
+		}
 
 		Rate rate = new Rate();
 		BeanUtils.copyProperties(rateService.getRate(), rate);
