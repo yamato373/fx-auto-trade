@@ -35,4 +35,8 @@ public class FixService {
 	public void unsubscribe() {
 		subscription.unsubscribe();
 	}
+
+	public void stop() {
+		subscription.stop();
+	}
 }

@@ -100,7 +100,7 @@ public class AutoTradeService {
 						OrderResult or = orderService.order(Side.BID, tradeSettings.getOrderAmount(), trapPx);
 						Position p = positionRepository.save(new Position(tp, or.getClOrdId(), null, true));
 
-						log.info("AutoTradeでポジションを遡ってASK注文。OrderResult:" + or + "、Position:" + p);
+						log.info("AutoTradeでポジションを遡ってBID注文。OrderResult:" + or + "、Position:" + p);
 					}
 				}
 				// 現在の価格のポジションを注文する

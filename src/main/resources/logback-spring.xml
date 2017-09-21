@@ -1,6 +1,6 @@
 <configuration>
 
-	<property name="LOG_DIR" value="./log" />
+	<property name="LOG_DIR" value="/var/log/fx-auto-trade" />
 	<property name="PATTERN" value="%date %level [%thread] %logger{10} %msg%n" />
 	<property name="FIX_MSG_PATTERN" value="%date %msg%n" />
 	<property name="MAX_HISTORY" value="30" />
@@ -16,7 +16,7 @@
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>${LOG_DIR}/app.log</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>${LOG_DIR}/app.%d{yyyy-MM-dd}.log
+			<fileNamePattern>${LOG_DIR}/app.%d{yyyy-MM-dd}.log.zip
 			</fileNamePattern>
 			<maxHistory>${MAX_HISTORY}</maxHistory>
 		</rollingPolicy>
@@ -29,7 +29,7 @@
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>${LOG_DIR}/price-event.log</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>${LOG_DIR}/price-event.%d{yyyy-MM-dd}.log
+			<fileNamePattern>${LOG_DIR}/price-event.%d{yyyy-MM-dd}.log.zip
 			</fileNamePattern>
 			<maxHistory>${MAX_HISTORY}</maxHistory>
 		</rollingPolicy>
@@ -42,7 +42,7 @@
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>${LOG_DIR}/price-message.log</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>${LOG_DIR}/price-message.%d{yyyy-MM-dd}.log
+			<fileNamePattern>${LOG_DIR}/price-message.%d{yyyy-MM-dd}.log.zip
 			</fileNamePattern>
 			<maxHistory>${MAX_HISTORY}</maxHistory>
 		</rollingPolicy>
@@ -55,7 +55,7 @@
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>${LOG_DIR}/order-event.log</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>${LOG_DIR}/order-event.%d{yyyy-MM-dd}.log
+			<fileNamePattern>${LOG_DIR}/order-event.%d{yyyy-MM-dd}.log.zip
 			</fileNamePattern>
 			<maxHistory>${MAX_HISTORY}</maxHistory>
 		</rollingPolicy>
@@ -68,7 +68,7 @@
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>${LOG_DIR}/order-message.log</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>${LOG_DIR}/order-message.%d{yyyy-MM-dd}.log
+			<fileNamePattern>${LOG_DIR}/order-message.%d{yyyy-MM-dd}.log.zip
 			</fileNamePattern>
 			<maxHistory>${MAX_HISTORY}</maxHistory>
 		</rollingPolicy>

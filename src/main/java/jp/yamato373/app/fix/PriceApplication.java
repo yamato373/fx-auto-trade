@@ -59,6 +59,7 @@ public class PriceApplication extends MessageCracker implements Application {
 
 	@Override
 	public void onLogout(SessionID sessionID) {
+		fixService.stop();
 		log.info("プライスセッションのログアウト完了。");
 	}
 

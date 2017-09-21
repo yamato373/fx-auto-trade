@@ -69,6 +69,7 @@ public class PriceInitiator {
 			fixService.unsubscribe();
 		}
 		rateService.clearRate();
+		fixService.stop();
 		logout();
 	}
 

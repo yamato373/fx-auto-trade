@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +60,8 @@ public class Subscription {
 	 */
 	private Date lastReceivetime = new Date();
 
+	private ScheduledFuture<?> scheduledFuture;
+
 	SessionID sessionId;
 
 	private final ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
@@ -66,7 +69,7 @@ public class Subscription {
 	public void start(SessionID sessionId) {
 		this.sessionId = sessionId;
 
-		service.scheduleWithFixedDelay(() -> {
+		scheduledFuture = service.scheduleWithFixedDelay(() -> {
 
 			log.debug("Subscriptionチェックタスクを実行。");
 
@@ -87,6 +90,14 @@ public class Subscription {
 				}
 			}
 		}, 0, fixSettings.getSubscribeCheckInterval(), TimeUnit.SECONDS);
+	}
+
+	public void stop() {
+		if (scheduledFuture == null){
+			return;
+		}
+		scheduledFuture.cancel(true);
+		log.info("Subscriptionチェックタスクを停止。");
 	}
 
 	/**
