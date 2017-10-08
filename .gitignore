@@ -2,6 +2,8 @@
 .springBeans
 .factorypath
 .classpath
+.idea
+.DS_Store
 target/*
 fix/*
 log/*
